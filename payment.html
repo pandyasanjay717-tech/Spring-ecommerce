@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - YesBag</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; padding-top: 60px; }
+        
+        .header { 
+            position: fixed; top: 0; width: 100%; background: #FFD700; 
+            padding: 15px; display: flex; justify-content: space-between; 
+            z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header button { background: none; border: none; font-size: 24px; cursor: pointer; }
+        .header h2 { margin: 0; color: #2c3e50; }
+        
+        .payment-container { padding: 20px 15px; }
+        
+        .payment-methods { 
+            background: white; border-radius: 12px; padding: 15px; 
+            margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .method-option { 
+            display: flex; align-items: center; padding: 15px; 
+            border: 2px solid #e9ecef; border-radius: 8px; 
+            margin-bottom: 10px; cursor: pointer; transition: all 0.3s;
+        }
+        .method-option.selected { border-color: #28a745; background: #d4edda; }
+        .method-radio { margin-right: 15px; transform: scale(1.2); }
+        .method-icon { font-size: 24px; margin-right: 10px; }
+        .method-text { font-weight: bold; }
+        
+        .invoice { 
+            background: white; border-radius: 12px; padding: 20px; 
+            margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .invoice-row { 
+            display: flex; justify-content: space-between; 
+            margin-bottom: 12px; font-size: 16px; 
+        }
+        .invoice-row.total { 
+            font-weight: bold; font-size: 20px; 
+            color: #28a745; border-top: 2px solid #e9ecef; 
+            padding-top: 10px; 
+        }
+        
+        .confirm-btn { 
+            width: 100%; background: #28a745; color: white; 
+            border: none; padding: 18px; border-radius: 12px; 
+            font-size: 18px; font-weight: bold; cursor: pointer; 
+            margin-top: 20px; 
+        }
+        
+        /* UPI POPUP - FULL SCREEN */
+        .upi-popup { 
+            display: none; position: fixed; top: 0; left: 0; 
+            width: 100%; height: 100%; background: rgba(0,0,0,0.8); 
+            z-index: 1000; 
+        }
+        .upi-content { 
+            position: absolute; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); width: 90%; max-width: 350px; 
+            background: white; border-radius: 16px; padding: 25px; 
+            text-align: center; 
+        }
+        .upi-qr { 
+            width: 200px; height: 200px; margin: 20px auto; 
+            background: #ddd; border-radius: 12px; display: flex; 
+            align-items: center; justify-content: center; 
+            font-size: 12px; color: #666; 
+        }
+        .upi-id { font-size: 18px; font-weight: bold; color: #2c3e50; margin: 10px 0; }
+        .utr-section { margin-top: 20px; display: none; }
+        .utr-input { 
+            width: 100%; padding: 12px; border: 2px solid #28a745; 
+            border-radius: 8px; font-size: 16px; margin-bottom: 15px; 
+        }
+        .submit-utr { 
+            background: #28a745; color: white; border: none; 
+            padding: 12px 24px; border-radius: 8px; cursor: pointer; 
+            font-weight: bold; 
+        }
+        
+        .bottom-bar { 
+            position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: #2c3e50; display: flex; justify-content: space-around; 
+            padding: 10px 0; 
+        }
+        .bar-item { 
+            color: white; text-align: center; cursor: pointer; 
+            padding: 5px 10px; min-width: 60px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="window.location.href='address.html'">Back</button>
+        <h2>Payment</h2>
+        <div></div>
+    </div>
+
+    <div class="payment-container">
+        <!-- PAYMENT METHODS -->
+        <div class="payment-methods">
+            <h3 style="margin-bottom: 15px; color: #2c3e50;">Select Payment Method</h3>
+            <div class="method-option selected" onclick="selectMethod('cod')">
+                <input type="radio" class="method-radio" name="payment" value="cod" checked>
+                <span class="method-icon">Truck</span>
+                <div class="method-text">Cash on Delivery (COD)</div>
+            </div>
+            <div class="method-option" onclick="selectMethod('online')">
+                <input type="radio" class="method-radio" name="payment" value="online">
+                <span class="method-icon">Credit Card</span>
+                <div class="method-text">Online Payment (UPI)</div>
+            </div>
+        </div>
+
+        <!-- INVOICE -->
+        <div class="invoice">
+            <div class="invoice-row"><span>Subtotal:</span><span id="subtotal">₹0</span></div>
+            <div class="invoice-row"><span>Delivery Charges:</span><span id="delivery">₹0</span></div>
+            <hr>
+            <div class="invoice-row total"><span>TOTAL TO PAY:</span><span id="total">₹0</span></div>
+        </div>
+
+        <!-- CONFIRM BUTTON -->
+        <button class="confirm-btn" onclick="confirmPayment()">
+            CONFIRM & PAY ₹<span id="confirmTotal">0</span>
+        </button>
+    </div>
+
+    <!-- UPI POPUP -->
+    <div id="upiPopup" class="upi-popup" onclick="closeUpi(event)">
+        <div class="upi-content" onclick="event.stopPropagation()">
+            <h3 style="color: #28a745; margin-bottom: 10px;">UPI Payment</h3>
+            <p style="margin-bottom: 15px;">Pay to:</p>
+            <!-- UPI ID WILL BE FETCHED FROM ADMIN -->
+            <div class="upi-id" id="upiIdDisplay">Loading...</div>
+            <!-- QR CODE WILL BE FETCHED FROM ADMIN -->
+            <div class="upi-qr" id="upiQrContainer">
+                <div style="padding:20px;color:#666;">Loading QR...</div>
+            </div>
+            <p style="margin: 15px 0; color: #666;">Amount: ₹<span id="upiAmount">0</span></p>
+            
+            <button onclick="showUtrInput()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">
+                Payment Done - Enter UTR
+            </button>
+            
+            <div class="utr-section" id="utrSection">
+                <input type="text" id="utrId" class="utr-input" placeholder="Enter Transaction ID / UTR Number">
+                <button class="submit-utr" onclick="submitUtr()">Submit UTR</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <div class="bar-item" onclick="window.location.href='buyersHome.html'">Home</div>
+        <div class="bar-item" onclick="window.location.href='cart.html'">Cart</div>
+        <div class="bar-item">Star</div>
+        <div class="bar-item" onclick="window.location.href='Buyorder.html'">Orders</div>
+        <div class="bar-item" onclick="window.location.href='profile.html'">Profile</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAmAI2z12tk2bnlm__JT24ZGr5giB7Wpk0",
+            authDomain: "yesbag-84897.firebaseapp.com",
+            databaseURL: "https://yesbag-84897-default-rtdb.firebaseio.com",
+            projectId: "yesbag-84897",
+            storageBucket: "yesbag-84897.firebasestorage.app",
+            messagingSenderId: "2154662115",
+            appId: "1:2154662115:web:3382afabeff5519510ddd6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // NEW: FETCH UPI ID & QR FROM ADMIN
+        async function loadUpiDetails() {
+            try {
+                const upiRef = ref(db, 'admin/payment');
+                const snapshot = await get(upiRef);
+                const data = snapshot.val();
+
+                const upiIdEl = document.getElementById('upiIdDisplay');
+                const qrContainer = document.getElementById('upiQrContainer');
+
+                if (data && data.upiId) {
+                    upiIdEl.textContent = data.upiId;
+                } else {
+                    upiIdEl.textContent = 'yesbag@paytm'; // fallback
+                }
+
+                if (data && data.qrCodeUrl) {
+                    qrContainer.innerHTML = `<img src="${data.qrCodeUrl}" alt="UPI QR" style="width:200px;height:200px;border-radius:12px;">`;
+                } else {
+                    qrContainer.innerHTML = '<div class="upi-qr">Scan QR Code</div>';
+                }
+            } catch (error) {
+                console.error("Failed to load UPI details:", error);
+                document.getElementById('upiIdDisplay').textContent = 'yesbag@paytm';
+                document.getElementById('upiQrContainer').innerHTML = '<div class="upi-qr">Scan QR Code</div>';
+            }
+        }
+
+        // LOAD CART & CALCULATE
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        let subtotal = 0, delivery = 0, total = 0;
+
+        cart.forEach(item => {
+            const qty = item.qty || 1;
+            subtotal += (item.price || 0) * qty;
+            delivery += (item.deliveryCharge || 0) * qty;
+        });
+        total = subtotal + delivery;
+
+        // DISPLAY INVOICE
+        document.getElementById('subtotal').textContent = `₹${subtotal}`;
+        document.getElementById('delivery').textContent = `₹${delivery}`;
+        document.getElementById('total').textContent = `₹${total}`;
+        document.getElementById('confirmTotal').textContent = total;
+        document.getElementById('upiAmount').textContent = total;
+
+        // SELECT METHOD
+        function selectMethod(method) {
+            document.querySelectorAll('.method-option').forEach(opt => opt.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            document.querySelector(`input[value="${method}"]`).checked = true;
+        }
+
+        // CONFIRM PAYMENT
+        async function confirmPayment() {
+            const method = document.querySelector('input[name="payment"]:checked').value;
+            
+            if (method === 'online') {
+                // SHOW UPI POPUP
+                document.getElementById('upiPopup').style.display = 'block';
+            } else {
+                // DIRECT COD ORDER
+                await submitOrder('cod', '');
+            }
+        }
+
+        // SHOW UTR INPUT
+        function showUtrInput() {
+            document.getElementById('utrSection').style.display = 'block';
+            document.getElementById('utrId').focus();
+        }
+
+        // SUBMIT UTR
+        async function submitUtr() {
+            const utr = document.getElementById('utrId').value.trim();
+            if (!utr) return alert('Enter UTR Number!');
+            await submitOrder('online', utr);
+        }
+
+        // CLOSE UPI
+        function closeUpi(event) {
+            if (event.target.classList.contains('upi-popup')) {
+                document.getElementById('upiPopup').style.display = 'none';
+            }
+        }
+
+        // MAIN ORDER SUBMIT
+        async function submitOrder(paymentMethod, utr = '') {
+            const selectedAddress = JSON.parse(localStorage.getItem('selectedAddress') || '{}');
+            
+            const orderData = {
+                orderId: Date.now().toString(),
+                cart: cart,
+                address: selectedAddress,
+                payment: paymentMethod,
+                utr: utr,
+                subtotal: subtotal,
+                delivery: delivery,
+                total: total,
+                status: 'pending',
+                timestamp: new Date().toISOString()
+            };
+            
+            // SAVE TO FIREBASE
+            await push(ref(db, 'orders'), orderData);
+            
+            // CLEAR CART
+            localStorage.removeItem('cart');
+            localStorage.removeItem('selectedAddress');
+            
+            // SUCCESS ALERT
+            alert(`ORDER PLACED!\nOrder ID: ${orderData.orderId}\nTotal: ₹${total}\nStatus: ${paymentMethod.toUpperCase()}`);
+            
+            // WHATSAPP MESSAGE
+            const whatsappMsg = `YESBAG ORDER CONFIRMED!\n\n` +
+                `Order ID: ${orderData.orderId}\n` +
+                `Items: ${cart.length}\n` +
+                `Total: ₹${total}\n` +
+                `Payment: ${paymentMethod.toUpperCase()}\n` +
+                `${utr ? `UTR: ${utr}` : ''}\n` +
+                `Address: ${selectedAddress.address || 'Saved Address'}\n\n` +
+                `Thanks for shopping!`;
+            
+            window.open(`https://wa.me/919876543210?text=${encodeURIComponent(whatsappMsg)}`, '_blank');
+            
+            // REDIRECT HOME
+            window.location.href = 'buyersHome.html';
+        }
+
+        // EXPOSE FUNCTIONS
+        window.selectMethod = selectMethod;
+        window.confirmPayment = confirmPayment;
+        window.showUtrInput = showUtrInput;
+        window.submitUtr = submitUtr;
+        window.closeUpi = closeUpi;
+
+        // INIT: LOAD UPI + INVOICE
+        loadUpiDetails();  // NEW
+
+        console.log('=== PAYMENT PAGE READY ===');
+        console.log(`Total: ₹${total} | Method: COD`);
+    </script>
+</body>
+</html>

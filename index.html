@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Home - YesBag</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ALL YOUR ORIGINAL STYLES ARE 100% UNTOUCHED */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #fdfcf9; 
+            min-height: 100vh; 
+            padding-top: 60px; 
+            color: #333;
+            /* FOOTER KE LIYE GAP HATA DIYA */
+            padding-bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
+            background: #FFC300; 
+            z-index: 1000; display: flex; 
+            align-items: center; justify-content: space-between; 
+            padding: 0 15px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .icon-btn { 
+            font-size: 20px; cursor: pointer; color: #2c3e50; 
+            position: relative; padding: 5px; margin-left: 10px;
+        }
+        
+        #notificationDot {
+            display: none; 
+            position: absolute;
+            top: 2px;
+            right: 0px;
+            width: 10px;
+            height: 10px;
+            background-color: #E94C3D; 
+            border-radius: 50%;
+            border: 2px solid #FFC300; 
+        }
+
+        #cartBadge { 
+            display: none; background: #E94C3D; 
+            color: white; border-radius: 50%; 
+            padding: 2px 6px; font-size: 10px; position: absolute; top: -8px; right: -8px; 
+            font-weight: bold;
+        }
+        .hamburger-menu { 
+            display: none; position: absolute; top: 65px; right: 10px; 
+            background: white; border-radius: 8px; 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            min-width: 160px; z-index: 100;
+        }
+        .hamburger-menu.show { display: block; }
+        .hamburger-item { 
+            padding: 12px 15px; text-align: left; cursor: pointer; 
+            font-size: 15px; border-bottom: 1px solid #f0f0f0; 
+            color: #555;
+        }
+        .hamburger-item:last-child { border-bottom: none; }
+        .hamburger-item:hover { background: #fff8e6; }
+        
+        .search-container { padding: 15px; background: #fdfcf9; }
+        .search-bar { 
+            width: 100%; padding: 12px 20px; border: 1px solid #ddd;
+            border-radius: 25px; 
+            background: white; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        .search-bar:focus { border-color: #FFC300; box-shadow: 0 0 10px rgba(255,195,0,0.3); }
+
+        .search-popup { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(248, 248, 248, 0.95); 
+            z-index: 2000; backdrop-filter: blur(8px);
+        }
+        .search-popup-content { 
+            position: absolute; top: 70px; left: 50%; transform: translateX(-50%); 
+            width: 95%; max-height: 85vh; overflow-y: auto; padding: 20px 10px; 
+            background: white; border-radius: 12px; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        .search-popup-input { 
+            width: 100%; padding: 15px; border: none; font-size: 18px; 
+            border-bottom: 2px solid #FFC300; outline: none; margin-bottom: 15px;
+        }
+        .search-results { 
+            margin-top: 10px; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+            gap: 15px; 
+        }
+
+        /* NOTIFICATION MODAL (ONLY) */
+        .notification-modal {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .modal-content h3 {
+            color: #5a2e9d;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .notif-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #5a2e9d;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .notif-time {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .close-modal-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ccc;
+            cursor: pointer;
+        }
+        .close-modal-btn:hover { color: #E94C3D; }
+
+        /* REST OF YOUR ORIGINAL STYLES BELOW (UNCHANGED) */
+        .brands-section { padding: 10px 15px 20px; }
+        .section-title { 
+            font-size: 20px; font-weight: 600; 
+            color: #555; 
+            margin-bottom: 15px; 
+            border-left: 4px solid #FFC300;
+            padding-left: 10px;
+        }
+        
+        .products-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 15px; 
+            padding: 0 0 20px 0; 
+        }
+        .product-card { 
+            background: white; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+            cursor: pointer; 
+            position: relative; 
+            transition: transform 0.2s;
+        }
+        .product-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+        .product-image { height: 160px; background: #eee center/cover; position: relative; }
+        .like-btn { position: absolute; top: 8px; right: 8px; font-size: 18px; color: #E94C3D; background: rgba(255,255,255,0.8); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        .product-content {
+             padding: 10px 10px 5px; 
+             display: flex; 
+             flex-direction: column;
+             gap: 5px;
+        }
+        .product-title { 
+            font-weight: 500; 
+            font-size: 15px; 
+            color: #333; 
+            line-height: 1.3; 
+            min-height: 40px;
+            margin-bottom: 0;
+        }
+        .product-price { padding: 0 10px 5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .selling-price { font-weight: bold; font-size: 18px; color: #157347; }
+        .mrp { text-decoration: line-through; font-size: 13px; color: #999; }
+        .discount { color: #157347; font-weight: bold; font-size: 13px; background: #d4edda; padding: 2px 6px; border-radius: 4px;}
+        .ratings { padding: 0 10px 10px; display: flex; justify-content: space-between; align-items: center; }
+        .rating-stars { background: #FFC300; color: #333; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        
+        .feature-badge { 
+            position: absolute; top: 12px; left: 0; 
+            padding: 4px 8px 4px 15px; 
+            background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.7)); 
+            color: #333; 
+            font-size: 11px; 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+            z-index: 10;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        .s-trusted-badge { 
+            color: #5a2e9d; 
+            border-left: 5px solid #8b5cf6; 
+        }
+        .branded-badge { 
+            color: #E94C3D; 
+            border-left: 5px solid #E94C3D; 
+        }
+        .seasonal-badge {
+            display: inline-block; 
+            margin: 0 10px;
+            padding: 4px 8px;
+            background: #f97316; 
+            color: white;
+            border-radius: 4px;
+            font-size: 11px; 
+            font-weight: 600;
+            text-align: center;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        /* FOOTER — CONNECTED TO CONTENT (NO GAP) */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px 15px 20px;
+            margin-top: 0; /* NO GAP */
+            border-top: 1px solid #34495e;
+            flex-shrink: 0; /* PREVENT SHRINK */
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .footer-about {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #bdc3c7;
+        }
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: #FFC300;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .footer-social a {
+            color: white;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        .footer-social a:hover {
+            color: #FFC300;
+            transform: translateY(-3px);
+        }
+        .footer-contact {
+            font-size: 14px;
+            color: #bdc3c7;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-copyright {
+            text-align: center;
+            font-size: 13px;
+            color: #95a5a6;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #34495e;
+        }
+
+        /* MAIN CONTENT FLEX GROW */
+        .main-content {
+            flex: 1;
+        }
+
+        @media (max-width: 480px) {
+            .footer { padding: 25px 10px 15px; }
+            .footer-links { gap: 15px; flex-direction: column; }
+            .footer-about { font-size: 13px; }
+        }
+    </style>
+</head>
+<body id="buyerBody">
+
+    <!-- NOTIFICATION MODAL (ONLY) -->
+    <div class="notification-modal" id="notificationModal" onclick="closeNotificationModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal-btn" onclick="closeNotificationModal()">X</span>
+            <h3>Announcements</h3>
+            <div id="modalNotifList">
+                <div style="text-align:center;color:#999;padding:20px;">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER (UNCHANGED) -->
+    <div class="header">
+        <img src="logo.png" class="logo" alt="YesBag Logo">
+        <div></div>
+        <div class="icon-btn notification" onclick="trackClick('notificationIcon'); openNotificationModal()">
+            <i class="fa-solid fa-bell"></i>
+            <span id="notificationDot"></span>
+        </div>
+        <div class="icon-btn cart-icon" onclick="trackClick('cartIcon'); window.location.href='cart.html'">
+            <i class="fa-solid fa-cart-shopping"></i><span id="cartBadge">0</span>
+        </div>
+        <div class="icon-btn hamburger" onclick="toggleHamburger()">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="hamburger-menu" id="hamburgerMenu">
+            <div class="hamburger-item" onclick="window.location.href='Buyorder.html'">Orders</div>
+            <div class="hamburger-item" onclick="window.location.href='profile.html'">Profile</div>
+            <div class="hamburger-item" onclick="window.location.href='settings.html'">Settings</div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <div class="main-content">
+
+        <!-- SEARCH & PRODUCTS (UNCHANGED) -->
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search Products, Stores, or Categories" onclick="openSearchPopup(); trackClick('searchBar')">
+        </div>
+
+        <div class="search-popup" id="searchPopup" onclick="closeSearchPopup(event)">
+            <div class="search-popup-content" onclick="event.stopPropagation()">
+                <input type="text" class="search-popup-input" id="popupSearchInput" placeholder="Search..." oninput="performSearch(this.value)">
+                <div class="search-results" id="searchResults">
+                     <div style="text-align:center;padding:20px;color:#999;grid-column:1/-1;">Start typing to see results...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="brands-section">
+            <div class="section-title">Featured Products</div>
+            <div class="products-grid" id="productsList">
+                <div style="text-align:center;padding:40px;color:#6c757d;grid-column:1/-1;">Loading Products...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER — CONNECTED TO END OF CONTENT -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-about">
+                <strong>YesBag</strong> — Your trusted online shopping destination for quality products at unbeatable prices. Shop with confidence!
+            </div>
+            <div class="footer-links">
+                <a href="about.html">About Us</a>
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-social">
+                <a href="https://instagram.com/yesbag" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://facebook.com/yesbag" target="_blank"><i class="fab fa-facebook"></i></a>
+            </div>
+            <div class="footer-contact">
+                <i class="fas fa-phone"></i> +91 98765 43210
+            </div>
+            <div class="footer-copyright">
+                © 2025 YesBag. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAmAI2z12tk2bnlm__JT24ZGr5giB7Wpk0",
+            authDomain: "yesbag-84897.firebaseapp.com",
+            databaseURL: "https://yesbag-84897-default-rtdb.firebaseio.com",
+            projectId: "yesbag-84897",
+            storageBucket: "yesbag-84897.firebasestorage.app",
+            messagingSenderId: "2154662115",
+            appId: "1:2154662115:web:3382afabeff5519510ddd6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        let allProducts = [];
+        let notifications = [];
+        let seenNotifIds = new Set(JSON.parse(localStorage.getItem('seenNotifs') || '[]'));
+
+        // CLICK TRACKING
+        window.trackClick = async (elementName, maxRetries = 3) => {
+            const clickRef = ref(db, `admin/buyerHomePage/metrics/clicks/${elementName}`);
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const snapshot = await get(clickRef);
+                    const currentCount = snapshot.val() || 0;
+                    await set(clickRef, currentCount + 1);
+                    return; 
+                } catch (error) {
+                    console.warn(`Click tracking attempt ${i + 1} failed for ${elementName}:`, error.message);
+                    if (i === maxRetries - 1) return;
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 100));
+                }
+            }
+        };
+
+        // PRODUCT CLICK TRACKER — FIXED ORDER
+        window.trackProductClick = async (productId) => {
+            if (!productId || productId === 'unknown') return;
+            const clickRef = ref(db, `admin/productClicks/${productId}`);
+            const lastRef = ref(db, `admin/productClicks/${productId}_last`);
+            const now = new Date().toISOString();
+            try {
+                const [clickSnap] = await Promise.all([get(clickRef)]);
+                const clicks = (clickSnap.val() || 0) + 1;
+                await Promise.all([
+                    set(clickRef, clicks),
+                    set(lastRef, now)
+                ]);
+            } catch (error) {
+                console.warn("Product click track failed:", error);
+            }
+        };
+
+        // HOME REDIRECT COUNT
+        window.addEventListener('load', () => {
+            if (!sessionStorage.getItem('homeVisited')) {
+                trackClick('homeRedirects');
+                sessionStorage.setItem('homeVisited', 'true');
+            }
+        });
+
+        // LOAD NOTIFICATIONS
+        function loadNotifications() {
+            const notifsRef = ref(db, 'admin/buyerHomePage/notifications');
+            onValue(notifsRef, (snap) => {
+                const data = snap.val() || {};
+                notifications = Object.entries(data)
+                    .map(([id, n]) => ({ id, ...n }))
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                updateNotificationUI();
+            });
+        }
+
+        function updateNotificationUI() {
+            const dot = document.getElementById('notificationDot');
+            const modalList = document.getElementById('modalNotifList');
+            if (notifications.length === 0) {
+                dot.style.display = 'none';
+                modalList.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">No announcements yet.</div>';
+                return;
+            }
+            const hasUnseen = notifications.some(n => !seenNotifIds.has(n.id));
+            dot.style.display = hasUnseen ? 'block' : 'none';
+            modalList.innerHTML = notifications.map(n => {
+                const time = new Date(n.timestamp).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                return `<div class="notif-item"><div>${n.message}</div><div class="notif-time">${time}</div></div>`;
+            }).join('');
+        }
+
+        window.openNotificationModal = () => {
+            document.getElementById('notificationModal').style.display = 'flex';
+            notifications.forEach(n => seenNotifIds.add(n.id));
+            localStorage.setItem('seenNotifs', JSON.stringify([...seenNotifIds]));
+            document.getElementById('notificationDot').style.display = 'none';
+        };
+
+        window.closeNotificationModal = (e) => {
+            if (!e || e.target === document.getElementById('notificationModal')) {
+                document.getElementById('notificationModal').style.display = 'none';
+            }
+        };
+
+        function getProductData(product, firebaseKey) {
+            const discount = product.mrp && product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
+            return {
+                id: firebaseKey || product.id || product.productId || 'unknown',
+                image: product.images?.[0] || 'https://via.placeholder.com/160?text=Product',
+                title: product.title || 'Amazing Product',
+                price: product.price || 999,
+                mrp: product.mrp || 1299,
+                discount: discount,
+                offer: product.offer || null,
+                totalRatings: product.totalRatings || 4.5, 
+                usersRated: product.usersRated || 0, 
+                firebaseKey: firebaseKey,
+                markedAs: product.markedAs || '' 
+            };
+        }
+        
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const badge = document.getElementById('cartBadge');
+            if (cart.length > 0) {
+                badge.textContent = cart.length;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        async function loadProducts() {
+            const productsList = document.getElementById('productsList');
+            const productsRef = ref(db, 'products');
+            const reviewsRef = ref(db, 'reviews');
+            
+            try {
+                const [productSnapshot, reviewsSnapshot] = await Promise.all([get(productsRef), get(reviewsRef)]);
+                const productsObj = productSnapshot.val() || {};
+                const allReviews = Object.values(reviewsSnapshot.val() || {});
+
+                allProducts = [];
+                Object.entries(productsObj).forEach(([firebaseKey, product]) => {
+                    if (product.isDraft === true || product.active === false) return; 
+
+                    const productReviews = allReviews.filter(review => review.productId === firebaseKey);
+                    let totalRating = 4.5;
+                    if (productReviews.length > 0) {
+                        totalRating = productReviews.reduce((sum, review) => sum + (review.rating || 0), 0) / productReviews.length;
+                    } 
+
+                    allProducts.push({ 
+                        ...product, 
+                        firebaseKey,
+                        totalRatings: totalRating,
+                        usersRated: productReviews.length 
+                    });
+                });
+                
+                if (allProducts.length === 0) {
+                    productsList.innerHTML = '<div style="text-align:center;padding:40px;color:#6c757d;grid-column:1/-1;">No products available yet.</div>';
+                    return;
+                }
+                
+                const productArray = [...allProducts].sort(() => 0.5 - Math.random());
+                productsList.innerHTML = productArray.map(product => {
+                    const data = getProductData(product, product.firebaseKey);
+                    
+                    let featureBadgeHtml = '';
+                    let seasonalBadgeHtml = '';
+                    
+                    if (data.markedAs === 's-trusted') {
+                        featureBadgeHtml = '<div class="feature-badge s-trusted-badge">S-TRUSTED</div>';
+                    } else if (data.markedAs === 'branded') {
+                        featureBadgeHtml = '<div class="feature-badge branded-badge">BRANDED</div>';
+                    } else if (data.markedAs === 'seasonal') {
+                        seasonalBadgeHtml = '<span class="seasonal-badge">LIMITED TIME OFFER</span>';
+                    }
+                    
+                    const ratingStarsHtml = `<i class="fa-solid fa-star"></i> ${data.totalRatings.toFixed(1)}`;
+                    
+                    return `
+                        <div class="product-card" 
+                             onclick="trackProductClick('${data.id}'); trackClick('productCard'); window.location.href='ProductShow.html?id=${data.id}'">
+                            <div class="product-image" style="background-image: url(${data.image});">
+                                <div class="like-btn"><i class="fa-regular fa-heart"></i></div>
+                                ${featureBadgeHtml}
+                            </div>
+                            <div class="product-content">
+                                <div class="product-title">${data.title}</div>
+                                ${seasonalBadgeHtml} 
+                            </div>
+                            <div class="product-price">
+                                <span class="selling-price">₹${data.price}</span>
+                                <span class="mrp">₹${data.mrp}</span>
+                                <span class="discount">${data.discount}% OFF</span>
+                            </div>
+                            ${data.offer ? `<div class="offer"><i class="fa-solid fa-tags"></i> ${data.offer}</div>` : ''}
+                            <div class="ratings">
+                                <span class="rating-stars">${ratingStarsHtml}</span>
+                                <span class="rated-peoples">(${data.usersRated} ratings)</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error("Error loading products:", error);
+                productsList.innerHTML = '<div style="text-align:center;padding:40px;color:#dc3545;grid-column:1/-1;">Error loading data.</div>';
+            }
+        }
+
+        window.performSearch = (query) => {
+            const resultsEl = document.getElementById('searchResults');
+            if (query.length < 2) {
+                resultsEl.innerHTML = '<div style="text-align:center;padding:20px;color:#999;grid-column:1/-1;">Keep typing...</div>';
+                return;
+            }
+            const results = allProducts.filter(p => p.title?.toLowerCase().includes(query.toLowerCase()));
+            if (results.length === 0) {
+                resultsEl.innerHTML = '<div style="text-align:center;padding:20px;color:#6c757d;grid-column:1/-1;">No products found.</div>';
+                return;
+            }
+            resultsEl.innerHTML = results.map(product => {
+                const data = getProductData(product, product.firebaseKey);
+                const ratingStarsHtml = `<i class="fa-solid fa-star"></i> ${data.totalRatings.toFixed(1)}`;
+                return `
+                    <div class="product-card" 
+                         onclick="trackProductClick('${data.id}'); trackClick('productCard'); window.location.href='ProductShow.html?id=${data.id}'">
+                        <div class="product-image" style="background-image: url(${data.image});">
+                            <div class="like-btn"><i class="fa-regular fa-heart"></i></div>
+                        </div>
+                        <div class="product-title">${data.title}</div>
+                        <div class="product-price">
+                            <span class="selling-price">₹${data.price}</span>
+                            <span class="mrp">₹${data.mrp}</span>
+                            <span class="discount">${data.discount}% OFF</span>
+                        </div>
+                        <div class="ratings">
+                            <span class="rating-stars">${ratingStarsHtml}</span>
+                            <span class="rated-peoples">(${data.usersRated} ratings)</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        window.openSearchPopup = () => {
+            document.getElementById('searchPopup').style.display = 'flex';
+            document.getElementById('popupSearchInput').focus();
+        };
+
+        window.closeSearchPopup = (event) => {
+            if (event.target === document.getElementById('searchPopup')) {
+                document.getElementById('searchPopup').style.display = 'none';
+            }
+        };
+
+        window.toggleHamburger = () => {
+            document.getElementById('hamburgerMenu').classList.toggle('show');
+        };
+
+        // INIT
+        loadNotifications();
+        loadProducts();
+        updateCartBadge();
+        window.addEventListener('storage', updateCartBadge); 
+    </script>
+</body>
+</html>

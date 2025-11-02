@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart - YesBag</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; padding-top: 60px; }
+        
+        .header { 
+            position: fixed; top: 0; width: 100%; background: #FFD700; 
+            padding: 15px; display: flex; justify-content: space-between; 
+            z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header button { background: none; border: none; font-size: 24px; cursor: pointer; }
+        .header h2 { margin: 0; color: #2c3e50; }
+        
+        .cart-container { padding: 20px 15px; }
+        .cart-item { 
+            background: white; border-radius: 12px; padding: 15px; 
+            margin-bottom: 15px; display: flex; gap: 15px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .cart-image { 
+            width: 80px; height: 80px; border-radius: 8px; 
+            background: #ddd; background-size: cover; background-position: center; 
+        }
+        .cart-details { flex: 1; }
+        .cart-title { font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
+        .cart-price { color: #28a745; font-size: 18px; font-weight: bold; }
+        .qty-controls { 
+            display: flex; align-items: center; gap: 10px; margin: 10px 0; 
+        }
+        .qty-btn { 
+            width: 30px; height: 30px; border: 1px solid #ddd; 
+            border-radius: 50%; background: white; cursor: pointer; 
+            font-weight: bold; font-size: 16px;
+        }
+        .qty { min-width: 25px; text-align: center; font-weight: bold; }
+        .remove-btn { 
+            background: #dc3545; color: white; border: none; 
+            padding: 5px 10px; border-radius: 5px; cursor: pointer; 
+            font-size: 12px; 
+        }
+        
+        .summary { 
+            background: white; border-radius: 12px; padding: 20px; 
+            margin: 20px 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .summary-row { 
+            display: flex; justify-content: space-between; margin-bottom: 10px; 
+            font-size: 16px; 
+        }
+        .summary-row.total { font-weight: bold; font-size: 18px; color: #28a745; }
+        .checkout-btn { 
+            width: 100%; background: #28a745; color: white; border: none; 
+            padding: 18px; border-radius: 12px; font-size: 18px; 
+            font-weight: bold; cursor: pointer; margin-top: 20px; 
+        }
+        .empty-cart { 
+            text-align: center; padding: 40px; color: #6c757d; 
+            font-size: 18px; 
+        }
+        
+        .bottom-bar { 
+            position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: #2c3e50; display: flex; justify-content: space-around; 
+            padding: 10px 0; 
+        }
+        .bar-item { 
+            color: white; text-align: center; cursor: pointer; 
+            padding: 5px 10px; min-width: 60px; font-size: 14px; 
+        }
+        .bar-item.active { background: rgba(255,255,255,0.2); }
+        
+        @media (max-width: 768px) { 
+            .cart-container { padding: 15px; }
+            .cart-item { padding: 12px; gap: 10px; }
+            .cart-image { width: 60px; height: 60px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="window.location.href='buyersHome.html'">←</button>
+        <h2>🛒 My Cart</h2>
+        <div></div>
+    </div>
+
+    <div class="cart-container" id="cartItems">
+        <div class="empty-cart">🛒 Your cart is empty</div>
+    </div>
+
+    <div class="summary" id="summary" style="display:none;">
+        <div class="summary-row"><span>Subtotal (Items):</span><span id="subtotal">₹0</span></div>
+        <div class="summary-row"><span>Delivery Charges:</span><span id="delivery">₹0</span></div>
+        <hr style="margin: 10px 0;">
+        <div class="summary-row total"><span>TOTAL:</span><span id="total">₹0</span></div>
+        <button class="checkout-btn" onclick="checkout()">
+            🟢 PROCEED TO CHECKOUT
+        </button>
+    </div>
+
+    <div class="bottom-bar">
+        <div class="bar-item" onclick="window.location.href='buyersHome.html'">🏠</div>
+        <div class="bar-item active">🛒</div>
+        <div class="bar-item" onclick="window.location.href='Buyorder.html'">⭐</div>
+        <div class="bar-item" onclick="window.location.href='Buyorder.html'">📦</div>
+        <div class="bar-item" onclick="window.location.href='profile.html'">👤</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAmAI2z12tk2bnlm__JT24ZGr5giB7Wpk0",
+            authDomain: "yesbag-84897.firebaseapp.com",
+            databaseURL: "https://yesbag-84897-default-rtdb.firebaseio.com",
+            projectId: "yesbag-84897",
+            storageBucket: "yesbag-84897.firebasestorage.app",
+            messagingSenderId: "2154662115",
+            appId: "1:2154662115:web:3382afabeff5519510ddd6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        console.log('🛒 === CART PAGE LOADED ===');
+
+        // 🔥 COMPLETE RENDER FUNCTION WITH FIREBASE DELIVERY FETCH
+        async function renderCart() {
+            console.log('🔄 Rendering Cart...');
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            console.log('📦 Cart Items:', cart.length);
+            
+            const container = document.getElementById('cartItems');
+            const summary = document.getElementById('summary');
+            
+            if (cart.length === 0) {
+                container.innerHTML = '<div class="empty-cart">🛒 Your cart is empty<br><small>Add items from Home page</small></div>';
+                summary.style.display = 'none';
+                console.log('❌ Empty Cart');
+                return;
+            }
+
+            // 🔥 SYNC DELIVERYCHARGE FROM FIREBASE FOR EACH ITEM
+            for (let item of cart) {
+                if (item.productId) {
+                    try {
+                        const productRef = ref(db, `products/${item.productId}`);
+                        const snapshot = await get(productRef);
+                        const product = snapshot.val();
+                        item.deliveryCharge = product?.deliveryCharge; // ✅ FETCH FROM FIREBASE
+                    } catch (error) {
+                        console.log('⚠️ Delivery fetch failed for', item.productId, 'using local:', item.deliveryCharge);
+                    }
+                }
+            }
+            localStorage.setItem('cart', JSON.stringify(cart)); // ✅ SAVE UPDATED CART
+
+            // 🔥 FULL ITEM HTML WITH COMBINED PRICE
+            container.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <div class="cart-image" 
+                         style="background-image: url('${item.image || "https://via.placeholder.com/80?text=Product"}')">
+                    </div>
+                    <div class="cart-details">
+                        <div class="cart-title">${item.title || 'Product'}</div>
+                        <div class="cart-price">
+                            ₹${(item.price || 0) + (item.deliveryCharge || 0)}
+                            <small style="color:#6c757d; font-size:12px;">(Incl. ₹${item.deliveryCharge || 0} Delivery)</small>
+                        </div>
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="updateQty(${index}, -1)">–</button>
+                            <span class="qty">${item.qty || 1}</span>
+                            <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                            <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateSummary();
+            summary.style.display = 'block';
+            console.log('✅ Cart Rendered Successfully!');
+        }
+
+        // 🔥 QUANTITY UPDATE
+        function updateQty(index, change) {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            if (cart[index]) {
+                cart[index].qty = Math.max(1, (cart[index].qty || 1) + change);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart();
+                console.log(`📝 Qty Updated: ${cart[index].qty}`);
+            }
+        }
+
+        // 🔥 REMOVE ITEM
+        function removeItem(index) {
+            if (confirm('Remove this item?')) {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                cart.splice(index, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart();
+                console.log('🗑️ Item Removed');
+            }
+        }
+
+        // 🔥 SUMMARY WITH FIREBASE DELIVERY FETCH
+        async function updateSummary() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            let subtotal = 0;
+            let deliveryTotal = 0;
+            
+            for (let item of cart) {
+                const qty = item.qty || 1;
+                subtotal += (item.price || 0) * qty;
+                
+                if (item.productId) {
+                    try {
+                        const productRef = ref(db, `products/${item.productId}`);
+                        const snapshot = await get(productRef);
+                        const product = snapshot.val();
+                        const realDeliveryCharge = product?.deliveryCharge; // ✅ FETCH FROM FIREBASE
+                        deliveryTotal += (realDeliveryCharge || 0) * qty;
+                        item.deliveryCharge = realDeliveryCharge; // ✅ SYNC WITH FIREBASE
+                        console.log(`🧾 Item ${item.title} | Product: ₹${item.price} + Delivery: ₹${item.deliveryCharge}`);
+                    } catch (error) {
+                        console.log('⚠️ Delivery fetch failed, using local:', item.deliveryCharge);
+                        deliveryTotal += (item.deliveryCharge || 0) * qty;
+                    }
+                } else {
+                    deliveryTotal += (item.deliveryCharge || 0) * qty;
+                }
+            }
+            
+            const grandTotal = subtotal + deliveryTotal;
+            
+            document.getElementById('subtotal').textContent = `₹${subtotal}`;
+            document.getElementById('delivery').textContent = `₹${deliveryTotal}`;
+            document.getElementById('total').textContent = `₹${grandTotal}`;
+            
+            localStorage.setItem('cart', JSON.stringify(cart)); // ✅ SAVE UPDATED DELIVERY
+            
+            console.log(`💰 Subtotal: ₹${subtotal} | Delivery: ₹${deliveryTotal} | Total: ₹${grandTotal}`);
+        }
+
+        // 🔥 CHECKOUT - DIRECT TO ADDRESS
+        function checkout() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            if (cart.length === 0) {
+                alert('🛒 Cart is empty!');
+                return;
+            }
+            
+            console.log('✅ Checkout Clicked - Redirecting to address.html');
+            window.location.href = 'address.html';
+        }
+
+        // 🔥 EXPOSE FUNCTIONS GLOBALLY
+        window.updateQty = updateQty;
+        window.removeItem = removeItem;
+        window.checkout = checkout;
+
+        // 🔥 PAGE LOAD
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 DOM Loaded - Rendering Cart');
+            await renderCart(); // ✅ AWAIT FIREBASE SYNC
+        });
+
+        console.log('✅ === CART PAGE READY WITH FIREBASE DELIVERY ===');
+    </script>
+</body>
+</html>

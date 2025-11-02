@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address - YesBag</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; padding-top: 60px; padding-bottom: 80px; }
+        
+        .header { position: fixed; top: 0; width: 100%; background: #FFD700; padding: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        .header button { background: none; border: none; font-size: 24px; cursor: pointer; }
+        .header h2 { font-size: 18px; font-weight: 600; }
+
+        .address-container { padding: 20px 15px; max-width: 600px; margin: 0 auto; }
+        .address-card { background: white; border-radius: 12px; padding: 18px; margin-bottom: 18px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); border: 2px solid transparent; transition: all 0.3s; }
+        .address-card.selected { border: 2px solid #28a745; background: #f8fff8; }
+        .address-card strong { font-size: 16px; color: #2c3e50; display: block; margin-bottom: 5px; }
+        .address-card p { margin: 4px 0; font-size: 14px; color: #4a5568; }
+        .address-card p i { margin-right: 6px; color: #667eea; }
+
+        .add-new { background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 25px; font-size: 16px; }
+        .add-new:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 86, 234, 0.3); }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #2c3e50; font-size: 15px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 15px; transition: border 0.3s; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #667eea; outline: none; }
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; }
+
+        .continue-btn { width: 100%; background: linear-gradient(45deg, #28a745, #20c997); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 25px; transition: all 0.3s; }
+        .continue-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3); }
+        .continue-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); }
+        .bar-item { color: white; text-align: center; cursor: pointer; padding: 6px 10px; min-width: 60px; font-size: 20px; }
+        .bar-item span { display: block; font-size: 11px; margin-top: 2px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="window.location.href='cart.html'">Back</button>
+        <h2>Delivery Address</h2>
+        <div></div>
+    </div>
+
+    <div class="address-container">
+        <button class="add-new" onclick="toggleForm()">+ Add New Address</button>
+        
+        <div id="addForm" style="display:none; background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); margin-bottom:20px;">
+            <div class="form-group">
+                <label>Name *</label>
+                <input type="text" id="addrName" placeholder="Full Name">
+            </div>
+            <div class="form-group">
+                <label>Phone *</label>
+                <input type="tel" id="addrPhone" placeholder="10-digit mobile number" maxlength="10">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>State *</label>
+                    <input type="text" id="addrState" placeholder="e.g. Gujarat">
+                </div>
+                <div class="form-group">
+                    <label>City *</label>
+                    <input type="text" id="addrCity" placeholder="e.g. Ahmedabad">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Pincode *</label>
+                    <input type="text" id="addrPincode" placeholder="6-digit pincode" maxlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Area / Locality *</label>
+                    <input type="text" id="addrArea" placeholder="Street, Society, Building">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Landmark (Optional)</label>
+                <input type="text" id="addrLandmark" placeholder="Near temple, school, etc.">
+            </div>
+            <div class="form-group">
+                <label>Note (Optional)</label>
+                <textarea id="addrNote" rows="2" placeholder="Delivery instructions"></textarea>
+            </div>
+            <button onclick="addAddress()" class="continue-btn">Save & Use This Address</button>
+        </div>
+        
+        <div id="addressList"></div>
+        
+        <button id="continueBtn" class="continue-btn" onclick="continueToPayment()" style="display:none;">Continue to Payment</button>
+    </div>
+
+    <div class="bottom-bar">
+        <div class="bar-item" onclick="window.location.href='buyersHome.html'">Home <span>Home</span></div>
+        <div class="bar-item" onclick="window.location.href='cart.html'">Cart <span>Cart</span></div>
+        <div class="bar-item">Star <span>Wishlist</span></div>
+        <div class="bar-item" onclick="window.location.href='orders.html'">Box <span>Orders</span></div>
+        <div class="bar-item" onclick="window.location.href='profile.html'">Profile <span>Profile</span></div>
+    </div>
+
+    <script>
+        let addresses = JSON.parse(localStorage.getItem('addresses') || '[]');
+        let selectedAddress = null;
+
+        function toggleForm() {
+            const form = document.getElementById('addForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function addAddress() {
+            const name = document.getElementById('addrName').value.trim();
+            const phone = document.getElementById('addrPhone').value.trim();
+            const state = document.getElementById('addrState').value.trim();
+            const city = document.getElementById('addrCity').value.trim();
+            const pincode = document.getElementById('addrPincode').value.trim();
+            const area = document.getElementById('addrArea').value.trim();
+            const landmark = document.getElementById('addrLandmark').value.trim();
+            const note = document.getElementById('addrNote').value.trim();
+            
+            if (!name || !phone || !state || !city || !pincode || !area) {
+                return alert('Please fill all required fields!');
+            }
+            if (!/^\d{10}$/.test(phone)) return alert('Enter valid 10-digit phone');
+            if (!/^\d{6}$/.test(pincode)) return alert('Enter valid 6-digit pincode');
+            
+            const fullAddress = `${area}${landmark ? ', ' + landmark : ''}, ${city}, ${state} - ${pincode}`;
+            
+            const newAddr = { name, phone, state, city, pincode, area, landmark, note, fullAddress };
+            addresses.push(newAddr);
+            localStorage.setItem('addresses', JSON.stringify(addresses));
+            
+            renderAddresses();
+            toggleForm();
+            document.getElementById('addForm').querySelectorAll('input, textarea').forEach(el => el.value = '');
+        }
+
+        function renderAddresses() {
+            const container = document.getElementById('addressList');
+            container.innerHTML = addresses.map((addr, index) => `
+                <div class="address-card ${selectedAddress === addr ? 'selected' : ''}" onclick="selectAddress(${index})">
+                    <strong>${addr.name}</strong>
+                    <p>Phone: ${addr.phone}</p>
+                    <p>Address: ${addr.fullAddress}</p>
+                    ${addr.note ? `<p style="font-style:italic; color:#28a745;">Note: ${addr.note}</p>` : ''}
+                </div>
+            `).join('');
+            
+            document.getElementById('continueBtn').style.display = addresses.length > 0 ? 'block' : 'none';
+        }
+
+        function selectAddress(index) {
+            selectedAddress = addresses[index];
+            renderAddresses();
+        }
+
+        function continueToPayment() {
+            if (!selectedAddress) return alert('Please select an address!');
+            localStorage.setItem('selectedAddress', JSON.stringify(selectedAddress));
+            window.location.href = 'payment.html';
+        }
+
+        // Auto select last used
+        const lastAddr = JSON.parse(localStorage.getItem('selectedAddress'));
+        if (lastAddr) {
+            const idx = addresses.findIndex(a => 
+                a.name === lastAddr.name && 
+                a.phone === lastAddr.phone && 
+                a.fullAddress === lastAddr.fullAddress
+            );
+            if (idx !== -1) selectAddress(idx);
+        }
+
+        renderAddresses();
+        window.toggleForm = toggleForm;
+        window.addAddress = addAddress;
+        window.selectAddress = selectAddress;
+        window.continueToPayment = continueToPayment;
+    </script>
+</body>
+</html>

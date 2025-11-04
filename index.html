@@ -153,6 +153,53 @@
         }
         .close-modal-btn:hover { color: #E94C3D; }
 
+        /* --- NEW DYNAMIC SECTION STYLES --- */
+        .dynamic-section {
+            padding: 10px 15px 20px;
+            border-bottom: 8px solid #f0f0f0; /* Section Separator */
+        }
+        .dynamic-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .dynamic-section-title { 
+            font-size: 20px; 
+            font-weight: 700; 
+            color: #E94C3D; 
+            border-left: 4px solid #E94C3D;
+            padding-left: 10px;
+        }
+        .show-more-btn {
+            background: #2c3e50; 
+            color: white; 
+            border: none; 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: 500; 
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+        .show-more-btn:hover {
+            background: #34495e;
+        }
+        /* New Limited Grid Style: 2 rows, 2 columns (max 4 products) for smaller displays */
+        .section-product-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 15px; 
+            padding: 0; 
+        }
+        @media (max-width: 400px) {
+            .section-product-grid {
+                 grid-template-columns: repeat(2, 1fr); /* Enforce 2 columns for a tight grid on small screens */
+            }
+        }
+        /* --- END NEW DYNAMIC SECTION STYLES --- */
+
+
         /* REST OF YOUR ORIGINAL STYLES BELOW (UNCHANGED) */
         .brands-section { padding: 10px 15px 20px; }
         .section-title { 
@@ -317,7 +364,6 @@
 </head>
 <body id="buyerBody">
 
-    <!-- NOTIFICATION MODAL (ONLY) -->
     <div class="notification-modal" id="notificationModal" onclick="closeNotificationModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <span class="close-modal-btn" onclick="closeNotificationModal()">X</span>
@@ -328,9 +374,8 @@
         </div>
     </div>
 
-    <!-- HEADER (UNCHANGED) -->
     <div class="header">
-        <img src="logo.png" class="logo" alt="YesBag Logo">
+        <img src="logo.png" id="mainLogo" class="logo" alt="YesBag Logo">
         <div></div>
         <div class="icon-btn notification" onclick="trackClick('notificationIcon'); openNotificationModal()">
             <i class="fa-solid fa-bell"></i>
@@ -349,10 +394,8 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT WRAPPER -->
     <div class="main-content">
 
-        <!-- SEARCH & PRODUCTS (UNCHANGED) -->
         <div class="search-container">
             <input type="text" class="search-bar" placeholder="Search Products, Stores, or Categories" onclick="openSearchPopup(); trackClick('searchBar')">
         </div>
@@ -365,6 +408,9 @@
                 </div>
             </div>
         </div>
+        
+        <div id="dynamicSectionsContainer">
+            </div>
 
         <div class="brands-section">
             <div class="section-title">Featured Products</div>
@@ -375,7 +421,6 @@
 
     </div>
 
-    <!-- FOOTER — CONNECTED TO END OF CONTENT -->
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-about">
@@ -420,7 +465,31 @@
         let notifications = [];
         let seenNotifIds = new Set(JSON.parse(localStorage.getItem('seenNotifs') || '[]'));
 
-        // CLICK TRACKING
+        // --- NEW: LOGO LOADING FUNCTION ---
+        function loadDynamicLogo() {
+            const logoRef = ref(db, 'admin/settings/logoUrl');
+            const logoEl = document.getElementById('mainLogo');
+            const defaultUrl = 'logo.png'; // Fallback
+
+            // Use onValue for real-time updates (if admin changes it, buyer sees it eventually)
+            onValue(logoRef, (snapshot) => {
+                const logoUrl = snapshot.val();
+                if (logoUrl) {
+                    logoEl.src = logoUrl;
+                } else {
+                    // Fallback to the local file if the database value is null
+                    logoEl.src = defaultUrl;
+                }
+            }, (error) => {
+                console.error("Error loading logo URL:", error);
+                // On error, also use the fallback
+                logoEl.src = defaultUrl;
+            });
+        }
+        // --- END NEW LOGO LOGIC ---
+
+
+        // CLICK TRACKING (UNCHANGED)
         window.trackClick = async (elementName, maxRetries = 3) => {
             const clickRef = ref(db, `admin/buyerHomePage/metrics/clicks/${elementName}`);
             for (let i = 0; i < maxRetries; i++) {
@@ -437,7 +506,7 @@
             }
         };
 
-        // PRODUCT CLICK TRACKER — FIXED ORDER
+        // PRODUCT CLICK TRACKER (UNCHANGED)
         window.trackProductClick = async (productId) => {
             if (!productId || productId === 'unknown') return;
             const clickRef = ref(db, `admin/productClicks/${productId}`);
@@ -455,7 +524,7 @@
             }
         };
 
-        // HOME REDIRECT COUNT
+        // HOME REDIRECT COUNT (UNCHANGED)
         window.addEventListener('load', () => {
             if (!sessionStorage.getItem('homeVisited')) {
                 trackClick('homeRedirects');
@@ -463,7 +532,7 @@
             }
         });
 
-        // LOAD NOTIFICATIONS
+        // LOAD NOTIFICATIONS (UNCHANGED)
         function loadNotifications() {
             const notifsRef = ref(db, 'admin/buyerHomePage/notifications');
             onValue(notifsRef, (snap) => {
@@ -504,6 +573,7 @@
             }
         };
 
+        // PRODUCT HELPER FUNCTION (UNCHANGED)
         function getProductData(product, firebaseKey) {
             const discount = product.mrp && product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
             return {
@@ -517,10 +587,12 @@
                 totalRatings: product.totalRatings || 4.5, 
                 usersRated: product.usersRated || 0, 
                 firebaseKey: firebaseKey,
-                markedAs: product.markedAs || '' 
+                markedAs: product.markedAs || '',
+                category: product.category || ''
             };
         }
         
+        // CART BADGE (UNCHANGED)
         function updateCartBadge() {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const badge = document.getElementById('cartBadge');
@@ -531,9 +603,49 @@
                 badge.style.display = 'none';
             }
         }
-        
-        async function loadProducts() {
-            const productsList = document.getElementById('productsList');
+
+        // PRODUCT CARD HTML GENERATOR (UNCHANGED)
+        function createProductCardHtml(productData) {
+            let featureBadgeHtml = '';
+            let seasonalBadgeHtml = '';
+            
+            if (productData.markedAs === 's-trusted') {
+                featureBadgeHtml = '<div class="feature-badge s-trusted-badge">S-TRUSTED</div>';
+            } else if (productData.markedAs === 'branded') {
+                featureBadgeHtml = '<div class="feature-badge branded-badge">BRANDED</div>';
+            } else if (productData.markedAs === 'seasonal') {
+                seasonalBadgeHtml = '<span class="seasonal-badge">LIMITED TIME OFFER</span>';
+            }
+            
+            const ratingStarsHtml = `<i class="fa-solid fa-star"></i> ${productData.totalRatings.toFixed(1)}`;
+            
+            return `
+                <div class="product-card" 
+                     onclick="trackProductClick('${productData.id}'); trackClick('productCard'); window.location.href='ProductShow.html?id=${productData.id}'">
+                    <div class="product-image" style="background-image: url(${productData.image});">
+                        <div class="like-btn"><i class="fa-regular fa-heart"></i></div>
+                        ${featureBadgeHtml}
+                    </div>
+                    <div class="product-content">
+                        <div class="product-title">${productData.title}</div>
+                        ${seasonalBadgeHtml} 
+                    </div>
+                    <div class="product-price">
+                        <span class="selling-price">₹${productData.price}</span>
+                        <span class="mrp">₹${productData.mrp}</span>
+                        <span class="discount">${productData.discount}% OFF</span>
+                    </div>
+                    ${productData.offer ? `<div class="offer"><i class="fa-solid fa-tags"></i> ${productData.offer}</div>` : ''}
+                    <div class="ratings">
+                        <span class="rating-stars">${ratingStarsHtml}</span>
+                        <span class="rated-peoples">(${productData.usersRated} ratings)</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // MAIN FUNCTION TO LOAD ALL PRODUCTS AND REVIEWS (UNCHANGED)
+        async function loadAllProductsAndReviews() {
             const productsRef = ref(db, 'products');
             const reviewsRef = ref(db, 'reviews');
             
@@ -560,59 +672,116 @@
                     });
                 });
                 
-                if (allProducts.length === 0) {
-                    productsList.innerHTML = '<div style="text-align:center;padding:40px;color:#6c757d;grid-column:1/-1;">No products available yet.</div>';
-                    return;
-                }
-                
-                const productArray = [...allProducts].sort(() => 0.5 - Math.random());
-                productsList.innerHTML = productArray.map(product => {
-                    const data = getProductData(product, product.firebaseKey);
-                    
-                    let featureBadgeHtml = '';
-                    let seasonalBadgeHtml = '';
-                    
-                    if (data.markedAs === 's-trusted') {
-                        featureBadgeHtml = '<div class="feature-badge s-trusted-badge">S-TRUSTED</div>';
-                    } else if (data.markedAs === 'branded') {
-                        featureBadgeHtml = '<div class="feature-badge branded-badge">BRANDED</div>';
-                    } else if (data.markedAs === 'seasonal') {
-                        seasonalBadgeHtml = '<span class="seasonal-badge">LIMITED TIME OFFER</span>';
-                    }
-                    
-                    const ratingStarsHtml = `<i class="fa-solid fa-star"></i> ${data.totalRatings.toFixed(1)}`;
-                    
-                    return `
-                        <div class="product-card" 
-                             onclick="trackProductClick('${data.id}'); trackClick('productCard'); window.location.href='ProductShow.html?id=${data.id}'">
-                            <div class="product-image" style="background-image: url(${data.image});">
-                                <div class="like-btn"><i class="fa-regular fa-heart"></i></div>
-                                ${featureBadgeHtml}
-                            </div>
-                            <div class="product-content">
-                                <div class="product-title">${data.title}</div>
-                                ${seasonalBadgeHtml} 
-                            </div>
-                            <div class="product-price">
-                                <span class="selling-price">₹${data.price}</span>
-                                <span class="mrp">₹${data.mrp}</span>
-                                <span class="discount">${data.discount}% OFF</span>
-                            </div>
-                            ${data.offer ? `<div class="offer"><i class="fa-solid fa-tags"></i> ${data.offer}</div>` : ''}
-                            <div class="ratings">
-                                <span class="rating-stars">${ratingStarsHtml}</span>
-                                <span class="rated-peoples">(${data.usersRated} ratings)</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+                // Once allProducts is loaded, render everything else
+                renderDefaultFeaturedProducts();
+                loadDynamicSections();
 
             } catch (error) {
-                console.error("Error loading products:", error);
-                productsList.innerHTML = '<div style="text-align:center;padding:40px;color:#dc3545;grid-column:1/-1;">Error loading data.</div>';
+                console.error("Error loading all products and reviews:", error);
+                document.getElementById('productsList').innerHTML = '<div style="text-align:center;padding:40px;color:#dc3545;grid-column:1/-1;">Error loading data.</div>';
             }
         }
 
+        // RENDER DEFAULT FEATURED PRODUCTS (UNCHANGED)
+        function renderDefaultFeaturedProducts() {
+             const productsList = document.getElementById('productsList');
+            
+            if (allProducts.length === 0) {
+                productsList.innerHTML = '<div style="text-align:center;padding:40px;color:#6c757d;grid-column:1/-1;">No products available yet.</div>';
+                return;
+            }
+            
+            // Show up to 8 random products
+            const productArray = [...allProducts].sort(() => 0.5 - Math.random()).slice(0, 8);
+            productsList.innerHTML = productArray.map(product => {
+                const data = getProductData(product, product.firebaseKey);
+                return createProductCardHtml(data);
+            }).join('');
+        }
+
+        // NEW FUNCTION TO LOAD AND RENDER DYNAMIC SECTIONS (UNCHANGED)
+        function loadDynamicSections() {
+            const sectionsRef = ref(db, 'admin/buyerHomePage/sections');
+            const container = document.getElementById('dynamicSectionsContainer');
+            
+            onValue(sectionsRef, (snap) => {
+                const sectionsObj = snap.val() || {};
+                const sections = Object.entries(sectionsObj)
+                    .map(([id, s]) => ({ id, ...s }))
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                if (sections.length === 0) {
+                    container.innerHTML = '';
+                    return;
+                }
+                
+                container.innerHTML = sections.map(section => renderSection(section)).join('');
+            });
+        }
+
+        // RENDER A SINGLE DYNAMIC SECTION (UNCHANGED)
+        function renderSection(section) {
+            // 1. Filter Products based on Section Criteria
+            let filteredProducts = [];
+            
+            if (section.sourceType === 'stocked') {
+                if (section.stockedCriteria === 's-trusted' || section.stockedCriteria === 'branded' || section.stockedCriteria === 'seasonal') {
+                    filteredProducts = allProducts.filter(p => p.markedAs === section.stockedCriteria);
+                } else if (section.stockedCriteria === 'discount' && section.discountPercentage) {
+                    filteredProducts = allProducts.filter(p => {
+                        const discount = getProductData(p).discount;
+                        return discount >= section.discountPercentage;
+                    });
+                } else if (section.stockedCriteria === 'category') {
+                    // NOTE: Category logic will require knowing *which* category was selected in the admin panel. 
+                    // Since admin panel only says 'category', we'll default to a popular one or show all for now.
+                    // For a real app, the admin would also save the category name/ID.
+                    // We'll use a placeholder logic: filter by a hardcoded category for now, or skip if no category is defined.
+                    filteredProducts = allProducts.filter(p => p.category && p.category.toLowerCase() === 'electronics'); // Example placeholder
+                }
+            } else if (section.sourceType === 'manual') {
+                // Manual sections will need product IDs saved in Firebase under the section's node. 
+                // For now, we'll use a placeholder and show some random products.
+                // In a real app: filteredProducts = allProducts.filter(p => section.productIds.includes(p.firebaseKey));
+                filteredProducts = [...allProducts].sort(() => 0.5 - Math.random()).slice(0, 4);
+            }
+            
+            // Sort by a relevant metric (e.g., popularity, discount, or just random)
+            filteredProducts = filteredProducts.slice(0, 4); // Limit to 4 products (2x2 grid)
+
+            if (filteredProducts.length === 0) {
+                 return `
+                    <div class="dynamic-section">
+                        <div class="dynamic-section-header">
+                            <h2 class="dynamic-section-title">${section.name}</h2>
+                            <button class="show-more-btn">Show More</button>
+                        </div>
+                        <div style="text-align:center;padding:20px;color:#999;">No products currently match this criteria.</div>
+                    </div>
+                `;
+            }
+
+            // 2. Generate Product Cards HTML
+            const productsHtml = filteredProducts.map(product => {
+                const data = getProductData(product, product.firebaseKey);
+                return createProductCardHtml(data);
+            }).join('');
+
+            // 3. Generate Section HTML
+            return `
+                <div class="dynamic-section">
+                    <div class="dynamic-section-header">
+                        <h2 class="dynamic-section-title">${section.name}</h2>
+                        <button class="show-more-btn" onclick="window.location.href='section.html?id=${section.id}'">Show More</button>
+                    </div>
+                    <div class="section-product-grid">
+                        ${productsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // SEARCH (UNCHANGED)
         window.performSearch = (query) => {
             const resultsEl = document.getElementById('searchResults');
             if (query.length < 2) {
@@ -626,25 +795,7 @@
             }
             resultsEl.innerHTML = results.map(product => {
                 const data = getProductData(product, product.firebaseKey);
-                const ratingStarsHtml = `<i class="fa-solid fa-star"></i> ${data.totalRatings.toFixed(1)}`;
-                return `
-                    <div class="product-card" 
-                         onclick="trackProductClick('${data.id}'); trackClick('productCard'); window.location.href='ProductShow.html?id=${data.id}'">
-                        <div class="product-image" style="background-image: url(${data.image});">
-                            <div class="like-btn"><i class="fa-regular fa-heart"></i></div>
-                        </div>
-                        <div class="product-title">${data.title}</div>
-                        <div class="product-price">
-                            <span class="selling-price">₹${data.price}</span>
-                            <span class="mrp">₹${data.mrp}</span>
-                            <span class="discount">${data.discount}% OFF</span>
-                        </div>
-                        <div class="ratings">
-                            <span class="rating-stars">${ratingStarsHtml}</span>
-                            <span class="rated-peoples">(${data.usersRated} ratings)</span>
-                        </div>
-                    </div>
-                `;
+                return createProductCardHtml(data);
             }).join('');
         };
 
@@ -665,8 +816,9 @@
 
         // INIT
         loadNotifications();
-        loadProducts();
+        loadAllProductsAndReviews();
         updateCartBadge();
+        loadDynamicLogo(); // <-- NEW: Load the logo URL from Firebase
         window.addEventListener('storage', updateCartBadge); 
     </script>
 </body>

@@ -3,79 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Address - YesBag</title>
+    <title>Delivery Address - YesBag</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <style>
+        /* --- BASE STYLES --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; padding-top: 60px; padding-bottom: 80px; }
+        /* padding-bottom ko 20px kar diya hai kyunki bottom-bar hat gaya hai */
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; padding-top: 60px; padding-bottom: 20px; color: #333; }
         
-        .header { position: fixed; top: 0; width: 100%; background: #FFD700; padding: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
-        .header button { background: none; border: none; font-size: 24px; cursor: pointer; }
-        .header h2 { font-size: 18px; font-weight: 600; }
+        .header { position: fixed; top: 0; width: 100%; background: #FFD700; padding: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header button { background: none; border: none; font-size: 24px; cursor: pointer; color: #2c3e50; transition: transform 0.1s; }
+        .header button:active { transform: scale(0.9); }
+        .header h2 { font-size: 18px; font-weight: 700; color: #2c3e50; }
+        .header .controls { display: flex; gap: 15px; }
 
         .address-container { padding: 20px 15px; max-width: 600px; margin: 0 auto; }
-        .address-card { background: white; border-radius: 12px; padding: 18px; margin-bottom: 18px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); border: 2px solid transparent; transition: all 0.3s; }
-        .address-card.selected { border: 2px solid #28a745; background: #f8fff8; }
-        .address-card strong { font-size: 16px; color: #2c3e50; display: block; margin-bottom: 5px; }
-        .address-card p { margin: 4px 0; font-size: 14px; color: #4a5568; }
-        .address-card p i { margin-right: 6px; color: #667eea; }
+        
+        /* --- ADDRESS CARD --- */
+        .address-card { 
+            background: white; border-radius: 12px; padding: 18px; margin-bottom: 18px; 
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08); border: 2px solid #e1e8ed; 
+            transition: all 0.3s; position: relative;
+        }
+        .address-card.selected { border: 2px solid #28a745; background: #f0fff0; }
+        .address-card strong { font-size: 16px; color: #2c3e50; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .address-card p { margin: 4px 0; font-size: 14px; color: #4a5568; line-height: 1.4; }
 
-        .add-new { background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 25px; font-size: 16px; }
+        .address-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+        .address-type-badge { background: #667eea; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .default-badge { background: #FFC300; color: #2c3e50; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-right: 8px; }
+
+        .address-actions { margin-top: 10px; display: flex; gap: 10px; justify-content: flex-end; }
+        .address-actions button { background: none; border: none; font-size: 14px; cursor: pointer; color: #667eea; font-weight: 600; transition: color 0.2s; }
+        .address-actions button:hover { color: #5a2e9d; }
+        .deliver-btn { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .deliver-btn:hover { background: #1e8449; }
+
+        .cod-tag { background: #f0ad4e; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 10px; }
+
+        /* --- FORM STYLES --- */
+        .add-new { background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 25px; font-size: 16px; transition: all 0.3s; }
         .add-new:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 86, 234, 0.3); }
 
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #2c3e50; font-size: 15px; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 15px; transition: border 0.3s; }
+        .form-group { margin-bottom: 18px; position: relative; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; font-size: 15px; }
+        .form-group input, .form-group textarea, .form-group select { 
+            width: 100%; padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px; 
+            font-size: 15px; transition: border 0.3s, background 0.3s; 
+            background: #ffffff;
+        }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #667eea; outline: none; }
         .form-row { display: flex; gap: 12px; }
         .form-row .form-group { flex: 1; }
 
-        .continue-btn { width: 100%; background: linear-gradient(45deg, #28a745, #20c997); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 25px; transition: all 0.3s; }
+        /* --- VALIDATION FEEDBACK --- */
+        .feedback { 
+            position: absolute; right: 10px; top: 60%; 
+            color: #dc3545; font-size: 14px; 
+            display: none; align-items: center; gap: 5px;
+        }
+        .form-group.valid input { border-color: #28a745 !important; }
+        .form-group.invalid input { border-color: #dc3545 !important; }
+        .form-group.invalid .feedback { display: flex; }
+        
+        /* --- BUTTONS --- */
+        .form-actions { display: flex; gap: 15px; margin-top: 25px; }
+        .continue-btn { 
+            flex: 2; 
+            background: linear-gradient(45deg, #28a745, #20c997); 
+            color: white; border: none; padding: 15px; border-radius: 12px; 
+            font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.3s; 
+        }
         .continue-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3); }
-        .continue-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        .continue-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .save-later-btn {
+            flex: 1;
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #ccc;
+            padding: 15px; border-radius: 12px; 
+            font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; 
+        }
+        .save-later-btn:hover { background: #e0e0e0; }
+        
+        /* --- UTILITY & NEW FEATURES --- */
+        .loading-spinner {
+            border: 4px solid #f3f3f3; border-top: 4px solid #667eea; 
+            border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; 
+            margin-right: 8px; display: inline-block; vertical-align: middle;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); }
-        .bar-item { color: white; text-align: center; cursor: pointer; padding: 6px 10px; min-width: 60px; font-size: 20px; }
-        .bar-item span { display: block; font-size: 11px; margin-top: 2px; }
+        /* Current Location & OTP */
+        .utility-row { display: flex; gap: 10px; margin-top: 10px; }
+        .location-btn { 
+            flex: 1; background: #FFC300; color: #2c3e50; border: none; 
+            padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer;
+        }
+        .otp-verify-btn { 
+            flex: 1; background: #dc3545; color: white; border: none; 
+            padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer;
+        }
+        .address-type-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .address-type-group input[type="radio"] { display: none; }
+        .address-type-group label {
+            background: #e9ecef; color: #495057; padding: 8px 15px; border-radius: 20px;
+            font-size: 14px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
+        }
+        .address-type-group input[type="radio"]:checked + label {
+            background: #667eea; color: white; border-color: #5a2e9d;
+        }
+        
+        /* --- EMPTY STATE --- */
+        #emptyState {
+            text-align: center; padding: 50px 20px; background: #fff; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;
+        }
+        #emptyState i { font-size: 40px; color: #FFC300; margin-bottom: 15px; }
+        #emptyState h3 { color: #2c3e50; margin-bottom: 10px; }
+        #emptyState p { color: #6c757d; font-size: 15px; }
+
+        /* --- DARK MODE --- */
+        .dark-mode {
+            background: #121212;
+            color: #e0e0e0;
+        }
+        .dark-mode .header {
+            background: #1e1e1e;
+            box-shadow: 0 2px 10px rgba(255,255,255,0.1);
+        }
+        .dark-mode .header h2, .dark-mode .header button {
+            color: #FFC300;
+        }
+        .dark-mode .address-card, 
+        .dark-mode #addForm,
+        .dark-mode #emptyState {
+            background: #1e1e1e;
+            box-shadow: 0 3px 12px rgba(255,255,255,0.08);
+            border-color: #333;
+        }
+        .dark-mode .address-card strong, 
+        .dark-mode #emptyState h3,
+        .dark-mode .form-group label {
+            color: #FFC300;
+        }
+        .dark-mode .address-card p, 
+        .dark-mode #emptyState p {
+            color: #b0b0b0;
+        }
+        .dark-mode .form-group input, 
+        .dark-mode .form-group textarea, 
+        .dark-mode .form-group select {
+            background: #2c2c2c;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+        .dark-mode .form-group input:focus, .dark-mode .form-group textarea:focus {
+            border-color: #667eea;
+        }
+        .dark-mode .save-later-btn {
+            background: #333;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+        .dark-mode .address-type-group label {
+            background: #333;
+            color: #ccc;
+        }
+        .dark-mode .address-type-group input[type="radio"]:checked + label {
+            background: #5a2e9d;
+            border-color: #667eea;
+            color: white;
+        }
+        
+        /* New Styles for Final Continue Button */
+        #finalContinueBtn {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 580px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            font-size: 18px;
+            z-index: 99;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.15);
+        }
+
+        .dark-mode #finalContinueBtn {
+             box-shadow: 0 -5px 15px rgba(255,255,255,0.15);
+        }
     </style>
 </head>
-<body>
+<body id="addressBody">
     <div class="header">
-        <button onclick="window.location.href='cart.html'">Back</button>
+        <button onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i></button>
         <h2>Delivery Address</h2>
-        <div></div>
+        <div class="controls">
+             <button id="darkModeToggle"><i class="fa-solid fa-moon"></i></button>
+        </div>
     </div>
 
     <div class="address-container">
-        <button class="add-new" onclick="toggleForm()">+ Add New Address</button>
+        <div id="emptyState" style="display:none;">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <h3>No Address Found</h3>
+            <p>Looks like you haven't saved any delivery location yet. Add one now!</p>
+            <button class="add-new" onclick="toggleForm(true)">+ Add Now!</button>
+        </div>
+        
+        <button class="add-new" id="addNewBtn" onclick="toggleForm(true)" style="display:none;">+ Add New Address</button>
         
         <div id="addForm" style="display:none; background:white; padding:20px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); margin-bottom:20px;">
-            <div class="form-group">
+            <h3><span id="formTitle">Add New</span> Address</h3>
+            <hr style="margin: 10px 0 20px; border: 0; border-top: 1px solid #eee;">
+
+            <div class="form-group" id="groupName">
                 <label>Name *</label>
-                <input type="text" id="addrName" placeholder="Full Name">
+                <input type="text" id="addrName" placeholder="Full Name" oninput="validateField('addrName', 'text')" autofocus>
+                <div class="feedback"><i class="fa-solid fa-circle-exclamation"></i> Required</div>
             </div>
-            <div class="form-group">
+            
+            <div class="form-group" id="groupPhone">
                 <label>Phone *</label>
-                <input type="tel" id="addrPhone" placeholder="10-digit mobile number" maxlength="10">
+                <input type="tel" id="addrPhone" placeholder="10-digit mobile number" maxlength="10" oninput="validateField('addrPhone', 'phone')">
+                <div class="feedback"><i class="fa-solid fa-circle-exclamation"></i> 10 digits required</div>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>State *</label>
-                    <input type="text" id="addrState" placeholder="e.g. Gujarat">
-                </div>
-                <div class="form-group">
-                    <label>City *</label>
-                    <input type="text" id="addrCity" placeholder="e.g. Ahmedabad">
-                </div>
+            
+            <div class="utility-row">
+                 <button class="otp-verify-btn" id="otpBtn" onclick="verifyPhone()" disabled>Verify Phone (OTP)</button>
+                 <span id="phoneStatus" style="color:#28a745; font-size:14px; font-weight:600; align-self:center; display:none;"><i class="fa-solid fa-circle-check"></i> Verified</span>
             </div>
+            
             <div class="form-row">
-                <div class="form-group">
+                <div class="form-group" id="groupPincode">
                     <label>Pincode *</label>
-                    <input type="text" id="addrPincode" placeholder="6-digit pincode" maxlength="6">
+                    <input type="text" id="addrPincode" placeholder="6-digit pincode" maxlength="6" oninput="validateField('addrPincode', 'pincode'); autoFillLocation()">
+                    <div class="feedback"><i class="fa-solid fa-circle-exclamation"></i> 6 digits required</div>
                 </div>
-                <div class="form-group">
-                    <label>Area / Locality *</label>
-                    <input type="text" id="addrArea" placeholder="Street, Society, Building">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" id="groupState">
+                    <label>State *</label>
+                    <input type="text" id="addrState" placeholder="e.g. Gujarat" oninput="validateField('addrState', 'text')">
+                    <div class="feedback"><i class="fa-solid fa-circle-exclamation"></i> Required</div>
                 </div>
+                <div class="form-group" id="groupCity">
+                    <label>City *</label>
+                    <input type="text" id="addrCity" placeholder="e.g. Ahmedabad" oninput="validateField('addrCity', 'text')">
+                    <div class="feedback"><i class="fa-solid fa-circle-exclamation"></i> Required</div>
+                </div>
+            </div>
+
+            <div class="form-group" id="groupArea">
+                <label>Area / Locality *</label>
+                <input type="text" id="addrArea" placeholder="Flat No., Street, Society, Building" oninput="validateField('addrArea', 'text')">
+                <div class="feedback"><i class="fa-solid fa-circle-exclamation"></i> Required</div>
             </div>
             <div class="form-group">
                 <label>Landmark (Optional)</label>
@@ -85,99 +273,496 @@
                 <label>Note (Optional)</label>
                 <textarea id="addrNote" rows="2" placeholder="Delivery instructions"></textarea>
             </div>
-            <button onclick="addAddress()" class="continue-btn">Save & Use This Address</button>
+            
+            <div class="utility-row">
+                <button class="location-btn" onclick="useCurrentLocation()"><i class="fa-solid fa-location-dot"></i> Use Current Location</button>
+            </div>
+
+            <div class="form-group">
+                <label style="margin-top: 15px;">Address Type</label>
+                <div class="address-type-group">
+                    <input type="radio" id="typeHome" name="addrType" value="Home" checked>
+                    <label for="typeHome"><i class="fa-solid fa-house"></i> Home</label>
+                    
+                    <input type="radio" id="typeWork" name="addrType" value="Work">
+                    <label for="typeWork"><i class="fa-solid fa-briefcase"></i> Work</label>
+                    
+                    <input type="radio" id="typeOther" name="addrType" value="Other">
+                    <label for="typeOther"><i class="fa-solid fa-location-dot"></i> Other</label>
+                </div>
+            </div>
+
+            <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="addrDefault" style="width: auto;">
+                <label for="addrDefault" style="margin-bottom:0;">Set as Default Address</label>
+            </div>
+
+            <div class="form-actions">
+                <button onclick="saveAddress('continue')" id="saveContinueBtn" class="continue-btn" disabled>
+                    <span id="saveSpinner" style="display:none;" class="loading-spinner"></span> 
+                    Save & Continue
+                </button>
+                <button onclick="saveAddress('later')" class="save-later-btn">Save for Later</button>
+            </div>
+
+            <button onclick="toggleForm(false)" style="margin-top: 15px; background: #dc3545; color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; cursor: pointer;">Cancel</button>
+
+            <input type="hidden" id="editIndex">
         </div>
         
         <div id="addressList"></div>
         
-        <button id="continueBtn" class="continue-btn" onclick="continueToPayment()" style="display:none;">Continue to Payment</button>
     </div>
-
-    <div class="bottom-bar">
-        <div class="bar-item" onclick="window.location.href='buyersHome.html'">Home <span>Home</span></div>
-        <div class="bar-item" onclick="window.location.href='cart.html'">Cart <span>Cart</span></div>
-        <div class="bar-item">Star <span>Wishlist</span></div>
-        <div class="bar-item" onclick="window.location.href='orders.html'">Box <span>Orders</span></div>
-        <div class="bar-item" onclick="window.location.href='profile.html'">Profile <span>Profile</span></div>
-    </div>
+    
+    <button id="finalContinueBtn" class="continue-btn" onclick="continueToPayment()" style="display:none;">Continue to Payment</button>
 
     <script>
         let addresses = JSON.parse(localStorage.getItem('addresses') || '[]');
-        let selectedAddress = null;
+        // Set selected index to default address index or -1 if none found
+        let selectedAddressIndex = addresses.findIndex(a => a.isDefault);
+        let isPhoneVerified = false;
 
-        function toggleForm() {
-            const form = document.getElementById('addForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        // --- DARK MODE TOGGLE ---
+        document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+        
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
         }
 
-        function addAddress() {
-            const name = document.getElementById('addrName').value.trim();
-            const phone = document.getElementById('addrPhone').value.trim();
-            const state = document.getElementById('addrState').value.trim();
-            const city = document.getElementById('addrCity').value.trim();
-            const pincode = document.getElementById('addrPincode').value.trim();
-            const area = document.getElementById('addrArea').value.trim();
-            const landmark = document.getElementById('addrLandmark').value.trim();
-            const note = document.getElementById('addrNote').value.trim();
-            
-            if (!name || !phone || !state || !city || !pincode || !area) {
-                return alert('Please fill all required fields!');
+        function initDarkMode() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
             }
-            if (!/^\d{10}$/.test(phone)) return alert('Enter valid 10-digit phone');
-            if (!/^\d{6}$/.test(pincode)) return alert('Enter valid 6-digit pincode');
+        }
+        initDarkMode();
+
+
+        // --- FORM UTILITY FUNCTIONS ---
+        function toggleForm(show, index = -1) {
+            const form = document.getElementById('addForm');
+            const addBtn = document.getElementById('addNewBtn');
+            const emptyState = document.getElementById('emptyState');
             
-            const fullAddress = `${area}${landmark ? ', ' + landmark : ''}, ${city}, ${state} - ${pincode}`;
-            
-            const newAddr = { name, phone, state, city, pincode, area, landmark, note, fullAddress };
-            addresses.push(newAddr);
-            localStorage.setItem('addresses', JSON.stringify(addresses));
-            
-            renderAddresses();
-            toggleForm();
-            document.getElementById('addForm').querySelectorAll('input, textarea').forEach(el => el.value = '');
+            if (show) {
+                form.style.display = 'block';
+                addBtn.style.display = 'none';
+                emptyState.style.display = 'none';
+                document.getElementById('editIndex').value = index;
+                
+                // Input Field Auto-Focus
+                document.getElementById('addrName').focus();
+                
+                // Clear validation states
+                form.querySelectorAll('.form-group').forEach(el => el.classList.remove('valid', 'invalid'));
+
+                if (index !== -1) {
+                    // Edit Mode
+                    const addr = addresses[index];
+                    document.getElementById('formTitle').textContent = 'Edit';
+                    document.getElementById('addrName').value = addr.name;
+                    document.getElementById('addrPhone').value = addr.phone;
+                    document.getElementById('addrPincode').value = addr.pincode;
+                    document.getElementById('addrState').value = addr.state;
+                    document.getElementById('addrCity').value = addr.city;
+                    document.getElementById('addrArea').value = addr.area;
+                    document.getElementById('addrLandmark').value = addr.landmark;
+                    document.getElementById('addrNote').value = addr.note;
+                    document.getElementById('addrDefault').checked = addr.isDefault || false;
+                    document.querySelector(`input[name="addrType"][value="${addr.type || 'Home'}"]`).checked = true;
+                    
+                    isPhoneVerified = true; // Assume verified if editing existing
+                    updatePhoneVerificationStatus(true);
+                    
+                } else {
+                    // Add Mode
+                    document.getElementById('formTitle').textContent = 'Add New';
+                    form.querySelectorAll('input:not([type="radio"]), textarea').forEach(el => el.value = '');
+                    document.getElementById('addrDefault').checked = addresses.length === 0; // Default if first address
+                    document.getElementById('typeHome').checked = true;
+                    isPhoneVerified = false;
+                    updatePhoneVerificationStatus(false);
+                }
+                
+                checkFormValidity();
+
+            } else {
+                form.style.display = 'none';
+                renderAddresses();
+            }
         }
 
+        // Pincode से Auto-Fill City & State (Simulated)
+        function autoFillLocation() {
+            const pincode = document.getElementById('addrPincode').value;
+            const stateEl = document.getElementById('addrState');
+            const cityEl = document.getElementById('addrCity');
+            
+            if (pincode.length === 6) {
+                // Example Pincode Logic for demonstration
+                let state = '';
+                let city = '';
+                if (pincode.startsWith('380')) { state = 'Gujarat'; city = 'Ahmedabad'; } 
+                else if (pincode.startsWith('110')) { state = 'Delhi'; city = 'New Delhi'; } 
+                
+                stateEl.value = state;
+                cityEl.value = city;
+                
+                validateField('addrState', 'text');
+                validateField('addrCity', 'text');
+            } else if (pincode.length < 6) {
+                stateEl.value = '';
+                cityEl.value = '';
+                validateField('addrState', 'text');
+                validateField('addrCity', 'text');
+            }
+        }
+        
+        // Use Current Location Button (Simulated)
+        function useCurrentLocation() {
+            alert('Fetching your current location... (Simulated)');
+            
+            document.getElementById('addrPincode').value = '380015'; // Sim data
+            document.getElementById('addrState').value = 'Gujarat';
+            document.getElementById('addrCity').value = 'Ahmedabad';
+            document.getElementById('addrArea').value = 'Navrangpura'; // Sim data
+            
+            validateField('addrPincode', 'pincode');
+            validateField('addrState', 'text');
+            validateField('addrCity', 'text');
+            validateField('addrArea', 'text');
+            checkFormValidity();
+        }
+
+        // Phone Number OTP Verification (Simulated)
+        function verifyPhone() {
+            const phoneEl = document.getElementById('addrPhone');
+            if (!/^\d{10}$/.test(phoneEl.value)) {
+                alert('Please enter a valid 10-digit number first.');
+                return;
+            }
+            
+            alert(`OTP sent to ${phoneEl.value}. (Simulated: The code is 1234)`);
+            const otp = prompt('Enter the 4-digit OTP:');
+            
+            if (otp === '1234') {
+                isPhoneVerified = true;
+                updatePhoneVerificationStatus(true);
+                checkFormValidity();
+            } else {
+                alert('Verification failed. Try again.');
+                isPhoneVerified = false;
+                updatePhoneVerificationStatus(false);
+            }
+        }
+
+        function updatePhoneVerificationStatus(verified) {
+            const statusEl = document.getElementById('phoneStatus');
+            const btnEl = document.getElementById('otpBtn');
+            const phoneEl = document.getElementById('addrPhone');
+            
+            if (verified) {
+                statusEl.style.display = 'inline-block';
+                btnEl.style.display = 'none';
+                phoneEl.disabled = true;
+            } else {
+                statusEl.style.display = 'none';
+                btnEl.style.display = 'block';
+                phoneEl.disabled = false;
+                btnEl.disabled = !/^\d{10}$/.test(phoneEl.value);
+            }
+        }
+
+        // Form Validation with Real-Time Feedback
+        function validateField(id, type) {
+            const el = document.getElementById(id);
+            const parent = el.closest('.form-group');
+            let isValid = false;
+            
+            switch(type) {
+                case 'text':
+                    isValid = el.value.trim().length > 0;
+                    parent.querySelector('.feedback').innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Required';
+                    break;
+                case 'phone':
+                    isValid = /^\d{10}$/.test(el.value);
+                    break;
+                case 'pincode':
+                    isValid = /^\d{6}$/.test(el.value);
+                    break;
+            }
+
+            if (isValid) {
+                parent.classList.remove('invalid');
+                parent.classList.add('valid');
+            } else {
+                parent.classList.remove('valid');
+                if (el.value.length > 0 || type === 'text') {
+                    parent.classList.add('invalid');
+                }
+            }
+            
+            checkFormValidity();
+        }
+
+        function checkFormValidity() {
+            const requiredFields = ['addrName', 'addrPincode', 'addrState', 'addrCity', 'addrArea'];
+            const phoneField = document.getElementById('addrPhone');
+            
+            const allRequiredValid = requiredFields.every(id => document.getElementById(id).value.trim().length > 0);
+            const isPincodeValid = /^\d{6}$/.test(document.getElementById('addrPincode').value);
+            const isPhoneFormatValid = /^\d{10}$/.test(phoneField.value);
+            
+            const formValid = allRequiredValid && isPincodeValid && isPhoneFormatValid && isPhoneVerified;
+
+            document.getElementById('saveContinueBtn').disabled = !formValid;
+            
+            if (!isPhoneVerified) {
+                document.getElementById('otpBtn').disabled = !isPhoneFormatValid;
+            }
+            
+            return formValid;
+        }
+
+        // --- CRUD OPERATIONS ---
+        
+        // Save & Continue vs Save for Later
+        function saveAddress(action) {
+            if (action === 'continue' && !checkFormValidity()) {
+                alert('Please fill all required fields and verify phone number.');
+                return;
+            }
+            
+            // Loading Spinner on Save
+            const spinner = document.getElementById('saveSpinner');
+            const saveBtn = document.getElementById('saveContinueBtn');
+            spinner.style.display = 'inline-block';
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `<span id="saveSpinner" class="loading-spinner"></span> Saving...`;
+            
+            setTimeout(() => {
+                spinner.style.display = 'none';
+                saveBtn.innerHTML = `<span id="saveSpinner" style="display:none;" class="loading-spinner"></span> Save & Continue`;
+
+                const name = document.getElementById('addrName').value.trim();
+                const phone = document.getElementById('addrPhone').value.trim();
+                const state = document.getElementById('addrState').value.trim();
+                const city = document.getElementById('addrCity').value.trim();
+                const pincode = document.getElementById('addrPincode').value.trim();
+                const area = document.getElementById('addrArea').value.trim();
+                const landmark = document.getElementById('addrLandmark').value.trim();
+                const note = document.getElementById('addrNote').value.trim();
+                const isDefault = document.getElementById('addrDefault').checked;
+                const type = document.querySelector('input[name="addrType"]:checked').value;
+                
+                const fullAddress = `${area}${landmark ? ', ' + landmark : ''}, ${city}, ${state} - ${pincode}`;
+                
+                const newAddr = { name, phone, state, city, pincode, area, landmark, note, fullAddress, isDefault, type };
+                const editIndex = document.getElementById('editIndex').value;
+
+                if (isDefault) {
+                    addresses.forEach(a => a.isDefault = false);
+                }
+
+                if (editIndex !== '' && editIndex >= 0) {
+                    // Edit Address
+                    addresses[editIndex] = newAddr;
+                    alert('Address updated successfully!');
+                } else {
+                    // Recently Used Address First (Add to the start)
+                    addresses.unshift(newAddr); 
+                    alert('Address added successfully!');
+                }
+                
+                // Update selected/default index
+                if (isDefault) {
+                    selectedAddressIndex = addresses.findIndex(a => a.isDefault);
+                } else if (selectedAddressIndex === -1 && addresses.length > 0) {
+                    selectedAddressIndex = 0; 
+                }
+
+                localStorage.setItem('addresses', JSON.stringify(addresses));
+                
+                if (action === 'continue') {
+                    // Automatically select the newly saved address and proceed
+                    const finalIndex = editIndex !== '' ? parseInt(editIndex) : 0;
+                    selectAddress(finalIndex);
+                    continueToPayment(finalIndex);
+                } else {
+                    toggleForm(false);
+                }
+
+                renderAddresses();
+            }, 1000); // Simulate save time
+        }
+        
+        // Edit Address
+        function editAddress(index, event) {
+            if (event) event.stopPropagation();
+            toggleForm(true, index);
+        }
+
+        // Delete Address
+        function deleteAddress(index, event) {
+            event.stopPropagation(); // Prevent card selection
+            if (confirm('Are you sure you want to delete this address?')) {
+                const wasDefault = addresses[index].isDefault;
+                addresses.splice(index, 1);
+                
+                // Reassign default/selection
+                if (wasDefault && addresses.length > 0) {
+                    addresses[0].isDefault = true;
+                    selectedAddressIndex = 0;
+                } else if (selectedAddressIndex === index && addresses.length > 0) {
+                     selectedAddressIndex = 0;
+                } else {
+                    selectedAddressIndex = addresses.findIndex(a => a.isDefault) !== -1 ? addresses.findIndex(a => a.isDefault) : (addresses.length > 0 ? 0 : -1);
+                }
+
+                localStorage.setItem('addresses', JSON.stringify(addresses));
+                renderAddresses();
+                alert('Address deleted.');
+            }
+        }
+
+        // --- RENDERING & SELECTION ---
         function renderAddresses() {
             const container = document.getElementById('addressList');
-            container.innerHTML = addresses.map((addr, index) => `
-                <div class="address-card ${selectedAddress === addr ? 'selected' : ''}" onclick="selectAddress(${index})">
-                    <strong>${addr.name}</strong>
-                    <p>Phone: ${addr.phone}</p>
-                    <p>Address: ${addr.fullAddress}</p>
-                    ${addr.note ? `<p style="font-style:italic; color:#28a745;">Note: ${addr.note}</p>` : ''}
-                </div>
-            `).join('');
+            const emptyState = document.getElementById('emptyState');
+            const addBtn = document.getElementById('addNewBtn');
+            const finalContinueBtn = document.getElementById('finalContinueBtn');
             
-            document.getElementById('continueBtn').style.display = addresses.length > 0 ? 'block' : 'none';
+            // Default Address Logic (Ensure one default if present, or first is default)
+            if (addresses.length > 0 && addresses.findIndex(a => a.isDefault) === -1) {
+                addresses[0].isDefault = true;
+                selectedAddressIndex = 0;
+            } else if (addresses.length > 0 && selectedAddressIndex === -1) {
+                // If selection lost but addresses exist, default to the default one or first
+                selectedAddressIndex = addresses.findIndex(a => a.isDefault) !== -1 ? addresses.findIndex(a => a.isDefault) : 0;
+            }
+
+            if (addresses.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                addBtn.style.display = 'none';
+                finalContinueBtn.style.display = 'none';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            addBtn.style.display = 'block';
+            finalContinueBtn.style.display = 'block';
+            
+
+            container.innerHTML = addresses.map((addr, index) => {
+                const isSelected = index === selectedAddressIndex;
+                const isDefault = addr.isDefault;
+                
+                const typeIcon = addr.type === 'Work' ? 'fa-briefcase' : 
+                                 addr.type === 'Home' ? 'fa-house' : 'fa-location-dot';
+
+                return `
+                    <div class="address-card ${isSelected ? 'selected' : ''}" onclick="selectAddress(${index})">
+                        
+                        <div class="address-meta">
+                            <strong>
+                                ${addr.name}
+                                ${isDefault ? `<span class="default-badge"><i class="fa-solid fa-star"></i> DEFAULT</span>` : ''}
+                                <span class="address-type-badge"><i class="fa-solid ${typeIcon}"></i> ${addr.type}</span>
+                                ${isSelected ? `<span class="cod-tag">COD Available</span>` : ''}
+                            </strong>
+                            
+                            ${!isSelected ? 
+                                `<button class="deliver-btn" onclick="continueToPayment(${index}, event)">
+                                    Deliver Here 
+                                </button>` : 
+                                // Selected card shows no button, only COD tag in meta
+                                ``
+                            }
+                        </div>
+
+                        <p>${addr.fullAddress}</p>
+                        <p>Phone: ${addr.phone}</p>
+                        ${addr.note ? `<p style="font-style:italic; color:#28a745;">Note: ${addr.note}</p>` : ''}
+
+                        <div class="address-actions">
+                            <button onclick="editAddress(${index}, event)"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                            <button onclick="deleteAddress(${index}, event)" style="color:#dc3545;"><i class="fa-solid fa-trash"></i> Delete</button>
+                            ${!isDefault ? `<button onclick="setDefault(${index}, event)"><i class="fa-solid fa-bookmark"></i> Set Default</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function selectAddress(index) {
-            selectedAddress = addresses[index];
+            selectedAddressIndex = index;
+            localStorage.setItem('selectedAddress', JSON.stringify(addresses[index]));
+            renderAddresses();
+        }
+        
+        function setDefault(index, event) {
+            event.stopPropagation();
+            addresses.forEach((a, i) => a.isDefault = (i === index));
+            selectedAddressIndex = index;
+            localStorage.setItem('addresses', JSON.stringify(addresses));
             renderAddresses();
         }
 
-        function continueToPayment() {
-            if (!selectedAddress) return alert('Please select an address!');
-            localStorage.setItem('selectedAddress', JSON.stringify(selectedAddress));
-            window.location.href = 'payment.html';
-        }
+        function continueToPayment(index = selectedAddressIndex, event) {
+            if (event) event.stopPropagation();
+            if (index === -1) {
+                alert('Please select an address or add a new one!');
+                return;
+            }
+            
+            selectAddress(index);
+            localStorage.setItem('selectedAddress', JSON.stringify(addresses[index]));
+            
+            // Update button text/state while redirecting
+            const btn = event ? event.target : document.getElementById('finalContinueBtn');
+            if (btn) {
+                btn.innerHTML = `<span class="loading-spinner" style="margin:0;"></span> Delivering...`;
+                btn.disabled = true;
+            }
 
-        // Auto select last used
-        const lastAddr = JSON.parse(localStorage.getItem('selectedAddress'));
-        if (lastAddr) {
-            const idx = addresses.findIndex(a => 
-                a.name === lastAddr.name && 
-                a.phone === lastAddr.phone && 
-                a.fullAddress === lastAddr.fullAddress
-            );
-            if (idx !== -1) selectAddress(idx);
+            // Redirect to next page for working flow
+            setTimeout(() => {
+                window.location.href = 'payment.html'; 
+            }, 800);
         }
-
+        
+        // --- INITIALIZATION ---
+        
+        // Initial setup for form validation listeners
+        document.getElementById('addrPhone').addEventListener('input', (e) => {
+            if (!isPhoneVerified) {
+                updatePhoneVerificationStatus(false);
+            }
+            validateField('addrPhone', 'phone');
+        });
+        
+        document.getElementById('addrPincode').addEventListener('input', () => {
+             autoFillLocation();
+        });
+        
+        ['addrName', 'addrState', 'addrCity', 'addrArea'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => validateField(id, 'text'));
+        });
+        
         renderAddresses();
+        
+        // Expose functions globally
         window.toggleForm = toggleForm;
-        window.addAddress = addAddress;
+        window.saveAddress = saveAddress;
         window.selectAddress = selectAddress;
         window.continueToPayment = continueToPayment;
+        window.editAddress = editAddress;
+        window.deleteAddress = deleteAddress;
+        window.setDefault = setDefault;
+        window.useCurrentLocation = useCurrentLocation;
+        window.verifyPhone = verifyPhone;
     </script>
 </body>
 </html>

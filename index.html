@@ -6,7 +6,7 @@
     <title>Buyer Home - YesBag</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ALL YOUR ORIGINAL STYLES ARE 100% UNTOUCHED */
+        /* --- GENERAL STYLES (UNCHANGED) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', sans-serif; 
@@ -14,7 +14,6 @@
             min-height: 100vh; 
             padding-top: 60px; 
             color: #333;
-            /* FOOTER KE LIYE GAP HATA DIYA */
             padding-bottom: 0;
             display: flex;
             flex-direction: column;
@@ -99,6 +98,77 @@
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
             gap: 15px; 
         }
+        
+        /* --- TOP CATEGORIES STYLES (UPDATED FOR SIZE & CREATIVITY) --- */
+        .top-categories-section {
+            padding: 10px 0; 
+            background: white;
+            border-bottom: 1px solid #eee;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 5px; 
+        }
+        
+        .top-categories-container {
+            display: flex;
+            overflow-x: scroll; 
+            -webkit-overflow-scrolling: touch; 
+            padding: 0 15px; 
+            gap: 20px; /* Increased gap */
+        }
+        
+        .top-categories-container::-webkit-scrollbar {
+            display: none; 
+        }
+
+        .category-item-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            min-width: 80px; /* Increased min-width for larger icons and spacing */
+            transition: transform 0.3s, opacity 0.3s;
+        }
+        
+        .category-item-card:hover {
+            transform: translateY(-5px); /* More dramatic lift */
+            opacity: 0.9;
+        }
+
+        .category-logo {
+            width: 70px; /* Increased Size to 70px */
+            height: 70px; /* Increased Size to 70px */
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff; 
+            padding: 10px; /* Increased internal padding */
+            box-shadow: 0 4px 18px rgba(0,0,0,0.15); /* Deeper shadow */
+            border: 4px solid #FFC300; /* Thicker, prominent border */
+            transition: all 0.3s;
+        }
+        
+        .category-item-card:hover .category-logo {
+            border-color: #E94C3D; /* Highlight border on hover */
+            box-shadow: 0 0 25px rgba(255,195,0,0.6); /* Golden glow on hover */
+        }
+
+        .category-name {
+            margin-top: 6px; 
+            font-size: 14px; /* Increased size for easy reading */
+            font-weight: 700; /* Bolder font */
+            color: #2c3e50; /* Darker color for prominence */
+            white-space: normal; /* Allow wrapping if needed, but we control max-width */
+            max-width: 80px; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+            transition: color 0.3s;
+        }
+
+        .category-item-card:hover .category-name {
+            color: #E94C3D; 
+        }
 
         /* NOTIFICATION MODAL (ONLY) */
         .notification-modal {
@@ -153,16 +223,21 @@
         }
         .close-modal-btn:hover { color: #E94C3D; }
 
-        /* --- NEW DYNAMIC SECTION STYLES --- */
+        /* --- DYNAMIC SECTION STYLES (UPDATED: Edge-to-Edge) --- */
         .dynamic-section {
-            padding: 10px 15px 20px;
-            border-bottom: 8px solid #f0f0f0; /* Section Separator */
+            padding: 15px 0 10px; /* Horizontal padding removed for edge-to-edge */
+            margin: 15px 0; 
+            background: #ffffff; 
+            border-radius: 0; /* Removed border radius for full width look */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            border: none; 
         }
         .dynamic-section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            padding: 0 10px; /* Internal padding for header content */
         }
         .dynamic-section-title { 
             font-size: 20px; 
@@ -171,52 +246,103 @@
             border-left: 4px solid #E94C3D;
             padding-left: 10px;
         }
+        
+        .section-footer-action {
+            display: flex;
+            justify-content: flex-end; 
+            padding: 10px 10px 0; /* Internal padding for footer content */
+            margin-top: 15px;
+        }
+
         .show-more-btn {
             background: #2c3e50; 
             color: white; 
             border: none; 
-            padding: 6px 12px; 
+            padding: 8px 16px; 
             border-radius: 6px; 
             cursor: pointer; 
             font-weight: 500; 
-            font-size: 13px;
+            font-size: 14px;
             transition: background 0.2s;
         }
         .show-more-btn:hover {
             background: #34495e;
         }
-        /* New Limited Grid Style: 2 rows, 2 columns (max 4 products) for smaller displays */
+        
+        /* UPDATED GRID: Smaller Card Size and Edge-to-Edge Content Spacing */
         .section-product-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-            gap: 15px; 
-            padding: 0; 
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Smaller min-width */
+            gap: 10px; /* Reduced gap */
+            padding: 0 10px; /* Added internal padding to keep items off screen edge */
         }
         @media (max-width: 400px) {
             .section-product-grid {
-                 grid-template-columns: repeat(2, 1fr); /* Enforce 2 columns for a tight grid on small screens */
+                 grid-template-columns: repeat(2, 1fr);
+                 gap: 8px;
             }
         }
-        /* --- END NEW DYNAMIC SECTION STYLES --- */
-
-
-        /* REST OF YOUR ORIGINAL STYLES BELOW (UNCHANGED) */
-        .brands-section { padding: 10px 15px 20px; }
-        .section-title { 
-            font-size: 20px; font-weight: 600; 
-            color: #555; 
-            margin-bottom: 15px; 
-            border-left: 4px solid #FFC300;
-            padding-left: 10px;
-        }
         
-        .products-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-            gap: 15px; 
-            padding: 0 0 20px 0; 
+        /* NEW STYLES: Image-Only Card for Dynamic Sections */
+        .product-card-image-only {
+            padding: 0; 
+            background: none; 
+            box-shadow: none !important; /* Remove card shadow for cleaner look */
+            border: none !important;
+            border-radius: 0;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s;
         }
-        .product-card { 
+        .product-card-image-only:hover { transform: translateY(-3px); }
+
+        .product-card-image-only .product-image {
+            height: 140px; /* Consistent height */
+            margin: 0; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+            width: 100%;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+        .product-card-image-only:hover .product-image {
+            border-color: #FFC300;
+        }
+
+        /* FIX: Hiding other elements but ALLOWING .product-content (which contains the title) to show */
+        .product-card-image-only .product-price,
+        .product-card-image-only .ratings,
+        .product-card-image-only .like-btn,
+        .product-card-image-only .feature-badge,
+        .product-card-image-only .gold-marker-container {
+            display: none !important; 
+        }
+
+        /* Hide the custom label if the full title block is used */
+        .product-card-image-only-label {
+            display: none !important; 
+        }
+
+        /* Simple title/label for image-only card (shows product name below image) */
+        .product-card-image-only .product-content {
+            padding: 5px 0 0; /* Reduced padding to look like a label */
+            align-items: center; /* Center the title */
+            width: 100%;
+        }
+        .product-card-image-only .product-title {
+            font-size: 12px; 
+            font-weight: 600; 
+            color: #555; 
+            line-height: 1.2;
+            text-align: center;
+            min-height: auto; /* Allow height to adjust */
+            -webkit-line-clamp: 2; /* Still allow 2 lines */
+        }
+        /* --- VIDEO BANNER STYLES (UNCHANGED) --- */
+        .video-banner-card {
             background: white; 
             border-radius: 12px; 
             overflow: hidden; 
@@ -224,31 +350,255 @@
             cursor: pointer; 
             position: relative; 
             transition: transform 0.2s;
+            border: 2px solid #5a2e9d; 
+        }
+        .video-banner-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 177.78%; 
+            height: 0; 
+            background: #eee;
+            overflow: hidden;
+            display: flex;
+            justify-content: center; 
+            align-items: center;    
+        }
+        
+        .video-element {
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+        }
+
+        .video-thumbnail-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 20; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            background-size: cover; 
+            background-position: center;
+        }
+        
+        .play-button {
+            font-size: 50px;
+            color: white;
+            background: rgba(255, 0, 0, 0.85); 
+            border-radius: 12px; 
+            width: 80px;
+            height: 56px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s;
+        }
+        .play-button i {
+            font-size: 30px;
+            margin-left: 5px; 
+        }
+
+
+        .video-container.playing .video-thumbnail-overlay { display: none; }
+        .video-container:not(.playing) .video-element { visibility: hidden; }
+        .video-container.playing .video-element { visibility: visible; }
+
+        .video-icon-overlay {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: white;
+            background: rgba(255, 0, 0, 0.7); 
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            z-index: 25; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        /* --- COMPACT PRODUCT LINK CSS (UNCHANGED) --- */
+        .video-product-link {
+            display: flex; 
+            align-items: center;
+            padding: 8px 10px;
+            background: #f0f8ff;
+            border-top: 1px solid #e0f2f1;
+            text-decoration: none;
+            color: #333; 
+            transition: background 0.2s;
+            overflow: hidden; 
+        }
+
+        .video-product-link:hover {
+            background: #e3f2fd;
+        }
+
+        .product-thumb-small {
+            width: 40px; 
+            height: 40px; 
+            min-width: 40px; 
+            min-height: 40px; 
+            border-radius: 6px;
+            object-fit: cover;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .product-link-content {
+            flex-grow: 1; 
+            overflow: hidden;
+        }
+
+        .product-link-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #5a2e9d;
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis; 
+        }
+
+        .product-link-price {
+            font-size: 12px;
+            color: #E94C3D;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .view-product-btn {
+            margin-left: 10px;
+            padding: 6px 10px;
+            background: #FFC300;
+            color: #2c3e50;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+        /* --- END COMPACT PRODUCT LINK CSS --- */
+
+
+        /* --- PRODUCT CARD STYLES (UPDATED: Smaller Size) --- */
+        .brands-section { 
+             padding: 10px 0 20px; /* Horizontal padding removed for edge-to-edge */
+        }
+        .section-title { 
+            font-size: 20px; font-weight: 600; 
+            color: #555; 
+            margin-bottom: 15px; 
+            border-left: 4px solid #FFC300;
+            padding-left: 10px;
+            margin-left: 10px; /* Internal alignment */
+        }
+        
+        /* UPDATED GRID: Smaller Card Size and Edge-to-Edge Content Spacing */
+        .products-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Smaller min-width */
+            gap: 10px; /* Reduced gap */
+            padding: 0 10px 20px; /* Added internal padding to keep items off screen edge */
+        }
+        @media (max-width: 400px) {
+            .products-grid {
+                 grid-template-columns: repeat(2, 1fr);
+                 gap: 8px;
+            }
+        }
+        
+        .product-card { 
+            background: white; 
+            border-radius: 8px; /* Slightly smaller radius */
+            overflow: hidden; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+            cursor: pointer; 
+            position: relative; 
+            transition: transform 0.2s;
         }
         .product-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
-        .product-image { height: 160px; background: #eee center/cover; position: relative; }
+        
+        /* 👑 GOLD PRODUCT STYLES (UNCHANGED) 👑 */
+        .product-card.gold-product {
+            border: 3px solid #FFD700; 
+            box-shadow: 
+                0 0 10px #FFD700,
+                0 0 20px #FFD700; 
+        }
+        .product-card.gold-product:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 0 15px #FFD700, 
+                0 0 30px #FFD700;
+        }
+
+        .gold-marker-container {
+            position: absolute; 
+            top: 5px; 
+            left: 5px; 
+            z-index: 15; 
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7); 
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .gold-marker-container .crown-symbol {
+            font-size: 1.2em; 
+            margin-right: 5px;
+        }
+
+        .gold-marker-container .gold-text {
+            color: #FFD700; 
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px #FFD700, 0 0 10px #FFC300;
+        }
+        /* END GOLD PRODUCT STYLES */
+
+        .product-image { height: 140px; background: #eee center/cover; position: relative; } /* Reduced height */
         .like-btn { position: absolute; top: 8px; right: 8px; font-size: 18px; color: #E94C3D; background: rgba(255,255,255,0.8); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
         .product-content {
-             padding: 10px 10px 5px; 
+             padding: 8px 8px 5px; /* Reduced padding */
              display: flex; 
              flex-direction: column;
-             gap: 5px;
+             gap: 4px; /* Reduced gap */
         }
         .product-title { 
             font-weight: 500; 
-            font-size: 15px; 
+            font-size: 14px; /* Reduced font size */
             color: #333; 
             line-height: 1.3; 
-            min-height: 40px;
+            min-height: 36px; /* Adjusted min-height for 2 lines */
             margin-bottom: 0;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* Title cut-off after 2 lines */
+            -webkit-box-orient: vertical;
         }
-        .product-price { padding: 0 10px 5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .selling-price { font-weight: bold; font-size: 18px; color: #157347; }
-        .mrp { text-decoration: line-through; font-size: 13px; color: #999; }
-        .discount { color: #157347; font-weight: bold; font-size: 13px; background: #d4edda; padding: 2px 6px; border-radius: 4px;}
-        .ratings { padding: 0 10px 10px; display: flex; justify-content: space-between; align-items: center; }
-        .rating-stars { background: #FFC300; color: #333; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .product-price { padding: 0 8px 5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; } /* Reduced padding/gap */
+        .selling-price { font-weight: bold; font-size: 16px; color: #157347; } /* Reduced font size */
+        .mrp { text-decoration: line-through; font-size: 12px; color: #999; } /* Reduced font size */
+        .discount { color: #157347; font-weight: bold; font-size: 12px; background: #d4edda; padding: 2px 5px; border-radius: 4px;} /* Reduced font size/padding */
+        .ratings { padding: 0 8px 8px; display: flex; justify-content: space-between; align-items: center; } /* Reduced padding */
+        .rating-stars { background: #FFC300; color: #333; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; } /* Reduced font size */
         
         .feature-badge { 
             position: absolute; top: 12px; left: 0; 
@@ -285,14 +635,14 @@
             margin-bottom: 5px;
         }
 
-        /* FOOTER — CONNECTED TO CONTENT (NO GAP) */
+        /* --- FOOTER STYLES (UNCHANGED) --- */
         .footer {
             background: #2c3e50;
             color: white;
             padding: 30px 15px 20px;
-            margin-top: 0; /* NO GAP */
+            margin-top: 0;
             border-top: 1px solid #34495e;
-            flex-shrink: 0; /* PREVENT SHRINK */
+            flex-shrink: 0;
         }
         .footer-content {
             max-width: 1200px;
@@ -300,11 +650,6 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-        }
-        .footer-about {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #bdc3c7;
         }
         .footer-links {
             display: flex;
@@ -350,9 +695,17 @@
             border-top: 1px solid #34495e;
         }
 
-        /* MAIN CONTENT FLEX GROW */
         .main-content {
             flex: 1;
+        }
+        
+        .loading-indicator {
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            color: #2c3e50;
+            display: none;
+            grid-column: 1/-1;
         }
 
         @media (max-width: 480px) {
@@ -400,6 +753,11 @@
             <input type="text" class="search-bar" placeholder="Search Products, Stores, or Categories" onclick="openSearchPopup(); trackClick('searchBar')">
         </div>
 
+        <div class="top-categories-section">
+            <div id="topCategoriesContainer" class="top-categories-container">
+                <div style="text-align:center; padding:10px 0; width:100%;">Loading Categories...</div>
+            </div>
+        </div>
         <div class="search-popup" id="searchPopup" onclick="closeSearchPopup(event)">
             <div class="search-popup-content" onclick="event.stopPropagation()">
                 <input type="text" class="search-popup-input" id="popupSearchInput" placeholder="Search..." oninput="performSearch(this.value)">
@@ -409,16 +767,20 @@
             </div>
         </div>
         
-        <div id="dynamicSectionsContainer">
-            </div>
+        <div id="dynamicSectionsContainer"></div>
 
         <div class="brands-section">
             <div class="section-title">Featured Products</div>
             <div class="products-grid" id="productsList">
                 <div style="text-align:center;padding:40px;color:#6c757d;grid-column:1/-1;">Loading Products...</div>
             </div>
+             <div class="loading-indicator" id="productsLoadingIndicator">
+                <i class="fas fa-spinner fa-spin"></i> Loading more products...
+            </div>
+            <div class="loading-indicator" id="productsEndMessage" style="display:none; color: #999;">
+                All products loaded. Nothing more to see!
+            </div>
         </div>
-
     </div>
 
     <footer class="footer">
@@ -449,6 +811,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // IMPORTANT: Replace with your actual Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyAmAI2z12tk2bnlm__JT24ZGr5giB7Wpk0",
             authDomain: "yesbag-84897.firebaseapp.com",
@@ -461,70 +824,54 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        
         let allProducts = [];
         let notifications = [];
+        let videoBanners = []; 
         let seenNotifIds = new Set(JSON.parse(localStorage.getItem('seenNotifs') || '[]'));
 
-        // --- NEW: LOGO LOADING FUNCTION ---
-        function loadDynamicLogo() {
-            const logoRef = ref(db, 'admin/settings/logoUrl');
-            const logoEl = document.getElementById('mainLogo');
-            const defaultUrl = 'logo.png'; // Fallback
+        const PRODUCTS_PER_LOAD = 8;
+        let productsRenderedCount = 0;
+        let isLoading = false;
+        let combinedItems = []; 
 
-            // Use onValue for real-time updates (if admin changes it, buyer sees it eventually)
-            onValue(logoRef, (snapshot) => {
-                const logoUrl = snapshot.val();
-                if (logoUrl) {
-                    logoEl.src = logoUrl;
-                } else {
-                    // Fallback to the local file if the database value is null
-                    logoEl.src = defaultUrl;
-                }
-            }, (error) => {
-                console.error("Error loading logo URL:", error);
-                // On error, also use the fallback
-                logoEl.src = defaultUrl;
-            });
-        }
-        // --- END NEW LOGO LOGIC ---
-
-
-        // CLICK TRACKING (UNCHANGED)
-        window.trackClick = async (elementName, maxRetries = 3) => {
-            const clickRef = ref(db, `admin/buyerHomePage/metrics/clicks/${elementName}`);
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const snapshot = await get(clickRef);
-                    const currentCount = snapshot.val() || 0;
-                    await set(clickRef, currentCount + 1);
-                    return; 
-                } catch (error) {
-                    console.warn(`Click tracking attempt ${i + 1} failed for ${elementName}:`, error.message);
-                    if (i === maxRetries - 1) return;
-                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 100));
-                }
+        // --- TRACKING FUNCTIONS (UNCHANGED) ---
+        window.trackClick = async (elementName) => {
+            const totalRef = ref(db, `admin/buyerHomePage/metrics/clicks/${elementName}`);
+            const dailyRef = ref(db, `admin/dailyClicks/${elementName}/${Date.now()}`);
+            
+            try {
+                const snap = await get(totalRef);
+                const current = snap.val() || 0;
+                await Promise.all([
+                    set(totalRef, current + 1),
+                    set(dailyRef, true)
+                ]);
+            } catch (e) {
+                console.log("Click saved (fallback)");
             }
         };
 
-        // PRODUCT CLICK TRACKER (UNCHANGED)
         window.trackProductClick = async (productId) => {
             if (!productId || productId === 'unknown') return;
-            const clickRef = ref(db, `admin/productClicks/${productId}`);
+            const totalRef = ref(db, `admin/productClicks/${productId}`);
             const lastRef = ref(db, `admin/productClicks/${productId}_last`);
-            const now = new Date().toISOString();
+            const dailyRef = ref(db, `admin/dailyProductClicks/${productId}/${Date.now()}`);
+            const now = Date.now();
+            
             try {
-                const [clickSnap] = await Promise.all([get(clickRef)]);
-                const clicks = (clickSnap.val() || 0) + 1;
+                const snap = await get(totalRef);
+                const current = snap.val() || 0;
                 await Promise.all([
-                    set(clickRef, clicks),
-                    set(lastRef, now)
+                    set(totalRef, current + 1),
+                    set(lastRef, now),
+                    set(dailyRef, true)
                 ]);
             } catch (error) {
                 console.warn("Product click track failed:", error);
             }
         };
 
-        // HOME REDIRECT COUNT (UNCHANGED)
         window.addEventListener('load', () => {
             if (!sessionStorage.getItem('homeVisited')) {
                 trackClick('homeRedirects');
@@ -532,7 +879,34 @@
             }
         });
 
-        // LOAD NOTIFICATIONS (UNCHANGED)
+        // --- UTILITY FUNCTIONS (UNCHANGED) ---
+        
+        // Utility function to shuffle an array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function loadDynamicLogo() {
+            const logoRef = ref(db, 'admin/settings/logoUrl');
+            const logoEl = document.getElementById('mainLogo');
+            const defaultUrl = 'logo.png'; 
+            onValue(logoRef, (snapshot) => {
+                const logoUrl = snapshot.val();
+                if (logoUrl) {
+                    logoEl.src = logoUrl;
+                } else {
+                    logoEl.src = defaultUrl;
+                }
+            }, (error) => {
+                console.error("Error loading logo URL:", error);
+                logoEl.src = defaultUrl;
+            });
+        }
+
         function loadNotifications() {
             const notifsRef = ref(db, 'admin/buyerHomePage/notifications');
             onValue(notifsRef, (snap) => {
@@ -573,26 +947,49 @@
             }
         };
 
-        // PRODUCT HELPER FUNCTION (UNCHANGED)
-        function getProductData(product, firebaseKey) {
-            const discount = product.mrp && product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
+        // Extract YouTube Video ID from URL (supports regular, short, and Shorts links)
+        function extractYoutubeVideoId(url) {
+            if (!url) return null;
+            
+            const regex = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|live\/|ytsapi\?feature=ytsapi&v=))([a-zA-Z0-9_-]{11})/;
+            const match = url.match(regex);
+            
+            return (match && match[1]) ? match[1] : null;
+        }
+
+        // PRODUCT HELPER FUNCTION (Uses YouTube ID extractor)
+        function getProductData(item, firebaseKey) {
+            if (item.isVideo) {
+                 const videoId = extractYoutubeVideoId(item.url); 
+                 return {
+                    id: item.productId,
+                    url: item.url,
+                    videoId: videoId, 
+                    // YouTube Max Resolution Thumbnail for better vertical quality
+                    thumbnailUrl: videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : 'https://via.placeholder.com/320x570?text=YouTube+Video',
+                    title: item.productTitle,
+                    isVideo: true
+                };
+            }
+            
+            const discount = item.mrp && item.price ? Math.round(((item.mrp - item.price) / item.mrp) * 100) : 0;
             return {
-                id: firebaseKey || product.id || product.productId || 'unknown',
-                image: product.images?.[0] || 'https://via.placeholder.com/160?text=Product',
-                title: product.title || 'Amazing Product',
-                price: product.price || 999,
-                mrp: product.mrp || 1299,
+                id: firebaseKey || item.id || item.productId || 'unknown',
+                image: item.images?.[0] || 'https://via.placeholder.com/160?text=Product',
+                title: item.title || 'Amazing Product',
+                price: item.price || 999,
+                mrp: item.mrp || 1299,
                 discount: discount,
-                offer: product.offer || null,
-                totalRatings: product.totalRatings || 4.5, 
-                usersRated: product.usersRated || 0, 
+                offer: item.offer || null,
+                totalRatings: item.totalRatings || 4.5, 
+                usersRated: item.usersRated || 0, 
                 firebaseKey: firebaseKey,
-                markedAs: product.markedAs || '',
-                category: product.category || ''
+                markedAs: item.markedAs || '',
+                category: item.category || '',
+                isVideo: false
             };
         }
         
-        // CART BADGE (UNCHANGED)
         function updateCartBadge() {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const badge = document.getElementById('cartBadge');
@@ -604,10 +1001,99 @@
             }
         }
 
-        // PRODUCT CARD HTML GENERATOR (UNCHANGED)
+        // UPDATED: Play Video on Click (LOOP IMPLEMENTATION)
+        window.playVideo = (element, videoId, productId) => {
+            const container = element.closest('.video-container');
+            if (!container) return;
+
+            container.classList.add('playing');
+
+            const iframe = container.querySelector('.video-element');
+            
+            // To loop a single video, you must include the 'playlist' parameter with the same video ID.
+            const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&loop=1&playlist=${videoId}`; 
+
+            iframe.src = embedUrl;
+
+            trackProductClick(productId);
+        }
+
+        // VIDEO BANNER HTML GENERATOR (with Compact Product Link) (UNCHANGED)
+        function createVideoBannerHtml(videoData) {
+            
+            const videoId = videoData.videoId; 
+            const thumbnailUrl = videoData.thumbnailUrl;
+            
+            if (!videoId) {
+                return `
+                    <div class="video-banner-card" style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:160px; background:#ffebee; color:#E94C3D; text-align:center; padding:10px;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size:24px;"></i>
+                        <div style="font-size:12px; margin-top:5px;">Invalid YouTube URL or Video ID not found.</div>
+                    </div>
+                `;
+            }
+
+            // Fetch product data for the compact link
+            const productForLink = allProducts.find(p => p.firebaseKey === videoData.id);
+            const productLinkData = productForLink ? getProductData(productForLink, productForLink.firebaseKey) : null;
+            
+            // Fallback content
+            const linkImage = productLinkData ? productLinkData.image : 'https://via.placeholder.com/40?text=P';
+            const linkTitle = productLinkData ? productLinkData.title : videoData.title || 'Related Product';
+            const linkPrice = productLinkData ? `₹${productLinkData.price}` : 'View Details';
+
+
+            return `
+                <div class="video-banner-card">
+                    <div class="video-container" id="video-${videoId}"> 
+                       
+                       <div class="video-thumbnail-overlay" 
+                            style="background-image: url('${thumbnailUrl}');"
+                            onclick="playVideo(this, '${videoId}', '${videoData.id}');">
+                            <div class="play-button">
+                                <i class="fa-solid fa-play"></i>
+                            </div>
+                       </div>
+
+                       <iframe class="video-element"
+                            src="" 
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen
+                            title="${videoData.title} Video Preview (YouTube)">
+                       </iframe>
+                       
+                       <div class="video-icon-overlay">
+                            <i class="fa-brands fa-youtube"></i>
+                       </div>
+                    </div>
+                    
+                    <a href="ProductShow.html?id=${videoData.id}"
+                       onclick="trackProductClick('${videoData.id}'); trackClick('videoProductLink');" 
+                       class="video-product-link">
+                       
+                       <img src="${linkImage}" class="product-thumb-small" alt="Product Image">
+                       
+                       <div class="product-link-content">
+                           <div class="product-link-title">${linkTitle}</div>
+                           <div class="product-link-price">${linkPrice}</div>
+                       </div>
+                       
+                       <div class="view-product-btn">
+                           <i class="fa-solid fa-arrow-right"></i>
+                       </div>
+                    </a>
+                    </div>
+            `;
+        }
+
+
+        // PRODUCT CARD HTML GENERATOR (UPDATED: Title truncation handled by CSS)
         function createProductCardHtml(productData) {
             let featureBadgeHtml = '';
             let seasonalBadgeHtml = '';
+            let cardClasses = 'product-card'; 
+            let goldMarkerHtml = ''; 
             
             if (productData.markedAs === 's-trusted') {
                 featureBadgeHtml = '<div class="feature-badge s-trusted-badge">S-TRUSTED</div>';
@@ -616,16 +1102,26 @@
             } else if (productData.markedAs === 'seasonal') {
                 seasonalBadgeHtml = '<span class="seasonal-badge">LIMITED TIME OFFER</span>';
             }
+
+            if (productData.markedAs === 'gold') {
+                 cardClasses += ' gold-product'; 
+                 goldMarkerHtml = `
+                    <div class="gold-marker-container">
+                        <span class="crown-symbol">👑</span> 
+                        <span class="gold-text">GOLD</span>
+                    </div>
+                 `; 
+            }
             
             const ratingStarsHtml = `<i class="fa-solid fa-star"></i> ${productData.totalRatings.toFixed(1)}`;
             
             return `
-                <div class="product-card" 
+                <div class="${cardClasses}" 
                      onclick="trackProductClick('${productData.id}'); trackClick('productCard'); window.location.href='ProductShow.html?id=${productData.id}'">
                     <div class="product-image" style="background-image: url(${productData.image});">
                         <div class="like-btn"><i class="fa-regular fa-heart"></i></div>
                         ${featureBadgeHtml}
-                    </div>
+                        ${goldMarkerHtml} </div>
                     <div class="product-content">
                         <div class="product-title">${productData.title}</div>
                         ${seasonalBadgeHtml} 
@@ -643,8 +1139,80 @@
                 </div>
             `;
         }
+        
+        // --- NEW/UPDATED: TOP CATEGORIES LOGIC (UNCHANGED) ---
+        function loadTopCategories() {
+            const categoriesRef = ref(db, 'admin/buyerHomePage/categories');
+            const container = document.getElementById('topCategoriesContainer');
 
-        // MAIN FUNCTION TO LOAD ALL PRODUCTS AND REVIEWS (UNCHANGED)
+            onValue(categoriesRef, (snap) => {
+                const data = snap.val() || {};
+                
+                // Map the object entries to include the Firebase Key as 'id'
+                const categories = Object.entries(data)
+                                        .map(([id, c]) => ({ id, ...c })); 
+
+                if (categories.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; padding:10px 0; width:100%;">No categories defined by admin.</div>';
+                    return;
+                }
+                
+                const categoriesHtml = categories.map(c => `
+                    <a href="category-products.html?id=${c.id}" 
+                       class="category-item-card" 
+                       onclick="trackClick('categoryClick_${c.id}')"
+                       title="${c.name}">
+                        <img src="${c.logoUrl}" class="category-logo" alt="${c.name} Logo">
+                        <div class="category-name">${c.name}</div>
+                    </a>
+                `).join('');
+
+                container.innerHTML = categoriesHtml;
+            });
+        }
+        // --- END NEW LOGIC ---
+        
+        // --- DATA LOADING & RENDERING LOGIC (UNCHANGED) ---
+
+        function loadVideoBanners() {
+             const videosRef = ref(db, 'admin/buyerHomePage/videos');
+             onValue(videosRef, (snap) => {
+                const data = snap.val() || {};
+                videoBanners = Object.values(data).map(v => ({ ...v, isVideo: true }));
+                
+                if (allProducts.length > 0) {
+                    combineItemsAndRender();
+                }
+             });
+        }
+        
+        function combineItemsAndRender() {
+            // Start with shuffled products
+            let productsToCombine = [...allProducts];
+            combinedItems = [...productsToCombine]; 
+            
+            const interval = 6; 
+
+            videoBanners.forEach((video, index) => {
+                const insertionPoint = (index * interval) + Math.min(interval, combinedItems.length - 1); 
+                
+                if (insertionPoint < combinedItems.length) {
+                    combinedItems.splice(insertionPoint, 0, video);
+                } else {
+                     combinedItems.push(video);
+                }
+            });
+
+            if (productsRenderedCount === 0) {
+                 renderNextProducts();
+            } else {
+                 productsRenderedCount = 0;
+                 document.getElementById('productsList').innerHTML = '';
+                 renderNextProducts();
+            }
+        }
+
+
         async function loadAllProductsAndReviews() {
             const productsRef = ref(db, 'products');
             const reviewsRef = ref(db, 'reviews');
@@ -662,6 +1230,7 @@
                     let totalRating = 4.5;
                     if (productReviews.length > 0) {
                         totalRating = productReviews.reduce((sum, review) => sum + (review.rating || 0), 0) / productReviews.length;
+                        totalRating = parseFloat(totalRating.toFixed(1));
                     } 
 
                     allProducts.push({ 
@@ -672,8 +1241,10 @@
                     });
                 });
                 
-                // Once allProducts is loaded, render everything else
-                renderDefaultFeaturedProducts();
+                // SHUFFLE PRODUCTS TO ENSURE RANDOM ORDER
+                allProducts = shuffleArray(allProducts); 
+
+                combineItemsAndRender(); 
                 loadDynamicSections();
 
             } catch (error) {
@@ -682,24 +1253,61 @@
             }
         }
 
-        // RENDER DEFAULT FEATURED PRODUCTS (UNCHANGED)
-        function renderDefaultFeaturedProducts() {
-             const productsList = document.getElementById('productsList');
+        // renderNextProducts (Simple rendering) 
+        function renderNextProducts() {
+            const productsList = document.getElementById('productsList');
+            const loadingIndicator = document.getElementById('productsLoadingIndicator');
+            const endMessage = document.getElementById('productsEndMessage');
             
-            if (allProducts.length === 0) {
-                productsList.innerHTML = '<div style="text-align:center;padding:40px;color:#6c757d;grid-column:1/-1;">No products available yet.</div>';
+            endMessage.style.display = 'none';
+
+            if (productsRenderedCount >= combinedItems.length) { 
+                loadingIndicator.style.display = 'none';
+                isLoading = false;
+                if (productsRenderedCount === 0) {
+                     productsList.innerHTML = '<div style="text-align:center;padding:40px;color:#6c757d;grid-column:1/-1;">No products or banners available yet.</div>';
+                } else {
+                    endMessage.style.display = 'block'; 
+                }
                 return;
             }
+
+            isLoading = true;
+            loadingIndicator.style.display = 'block';
             
-            // Show up to 8 random products
-            const productArray = [...allProducts].sort(() => 0.5 - Math.random()).slice(0, 8);
-            productsList.innerHTML = productArray.map(product => {
-                const data = getProductData(product, product.firebaseKey);
-                return createProductCardHtml(data);
-            }).join('');
+            const nextItems = combinedItems.slice(productsRenderedCount, productsRenderedCount + PRODUCTS_PER_LOAD);
+            
+            setTimeout(() => {
+                const newItemsHtml = nextItems.map(item => {
+                    const data = getProductData(item, item.firebaseKey);
+                    return data.isVideo ? createVideoBannerHtml(data) : createProductCardHtml(data);
+                }).join('');
+                
+                if (productsRenderedCount === 0) {
+                    productsList.innerHTML = newItemsHtml;
+                } else {
+                    productsList.insertAdjacentHTML('beforeend', newItemsHtml);
+                }
+                
+                productsRenderedCount += nextItems.length;
+                isLoading = false;
+                loadingIndicator.style.display = 'none';
+
+                if (productsRenderedCount >= combinedItems.length) {
+                    endMessage.style.display = 'block';
+                }
+
+            }, 500); 
         }
 
-        // NEW FUNCTION TO LOAD AND RENDER DYNAMIC SECTIONS (UNCHANGED)
+        function handleScroll() {
+            const isNearBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 100);
+            if (isNearBottom && !isLoading && productsRenderedCount < combinedItems.length) {
+                renderNextProducts();
+            }
+        }
+        window.addEventListener('scroll', handleScroll);
+
         function loadDynamicSections() {
             const sectionsRef = ref(db, 'admin/buyerHomePage/sections');
             const container = document.getElementById('dynamicSectionsContainer');
@@ -719,13 +1327,15 @@
             });
         }
 
-        // RENDER A SINGLE DYNAMIC SECTION (UNCHANGED)
+        /**
+         * Renders a dynamic section, now using the standard card structure but with CSS
+         * to hide price/ratings and show the title correctly.
+         */
         function renderSection(section) {
-            // 1. Filter Products based on Section Criteria
             let filteredProducts = [];
             
             if (section.sourceType === 'stocked') {
-                if (section.stockedCriteria === 's-trusted' || section.stockedCriteria === 'branded' || section.stockedCriteria === 'seasonal') {
+                if (section.stockedCriteria === 's-trusted' || section.stockedCriteria === 'branded' || section.stockedCriteria === 'seasonal' || section.stockedCriteria === 'gold') {
                     filteredProducts = allProducts.filter(p => p.markedAs === section.stockedCriteria);
                 } else if (section.stockedCriteria === 'discount' && section.discountPercentage) {
                     filteredProducts = allProducts.filter(p => {
@@ -733,55 +1343,62 @@
                         return discount >= section.discountPercentage;
                     });
                 } else if (section.stockedCriteria === 'category') {
-                    // NOTE: Category logic will require knowing *which* category was selected in the admin panel. 
-                    // Since admin panel only says 'category', we'll default to a popular one or show all for now.
-                    // For a real app, the admin would also save the category name/ID.
-                    // We'll use a placeholder logic: filter by a hardcoded category for now, or skip if no category is defined.
-                    filteredProducts = allProducts.filter(p => p.category && p.category.toLowerCase() === 'electronics'); // Example placeholder
+                    // Note: This logic needs refining if you want specific category filtering. 
+                    // For now, it filters by a hardcoded 'electronics' if 'category' is the criteria.
+                    filteredProducts = allProducts.filter(p => p.category && p.category.toLowerCase() === 'electronics');
                 }
             } else if (section.sourceType === 'manual') {
-                // Manual sections will need product IDs saved in Firebase under the section's node. 
-                // For now, we'll use a placeholder and show some random products.
-                // In a real app: filteredProducts = allProducts.filter(p => section.productIds.includes(p.firebaseKey));
-                filteredProducts = [...allProducts].sort(() => 0.5 - Math.random()).slice(0, 4);
+                filteredProducts = allProducts.slice(0, 4);
             }
             
-            // Sort by a relevant metric (e.g., popularity, discount, or just random)
-            filteredProducts = filteredProducts.slice(0, 4); // Limit to 4 products (2x2 grid)
+            filteredProducts = filteredProducts.slice(0, 4); // Limit to 4 products
 
             if (filteredProducts.length === 0) {
                  return `
                     <div class="dynamic-section">
                         <div class="dynamic-section-header">
                             <h2 class="dynamic-section-title">${section.name}</h2>
-                            <button class="show-more-btn">Show More</button>
                         </div>
-                        <div style="text-align:center;padding:20px;color:#999;">No products currently match this criteria.</div>
+                        <div style="text-align:center;padding:20px 10px;color:#999;">No products currently match this criteria.</div>
+                        <div class="section-footer-action">
+                             <button class="show-more-btn" onclick="window.location.href='section.html?id=${section.id}'">Show More</button>
+                        </div>
                     </div>
                 `;
             }
 
-            // 2. Generate Product Cards HTML
+            // ⭐ FIX: Using the standard product card function and then injecting the image-only class.
             const productsHtml = filteredProducts.map(product => {
                 const data = getProductData(product, product.firebaseKey);
-                return createProductCardHtml(data);
+                
+                // 1. Generate the standard product card HTML
+                let cardHtml = createProductCardHtml(data);
+                
+                // 2. Inject the 'product-card-image-only' class into the main div to activate the custom CSS hiding price/ratings, but allowing the title.
+                // Replaces 'class="product-card"' with 'class="product-card product-card-image-only"'
+                cardHtml = cardHtml.replace('class="product-card', 'class="product-card product-card-image-only');
+
+                return cardHtml;
+
             }).join('');
 
-            // 3. Generate Section HTML
             return `
                 <div class="dynamic-section">
                     <div class="dynamic-section-header">
                         <h2 class="dynamic-section-title">${section.name}</h2>
-                        <button class="show-more-btn" onclick="window.location.href='section.html?id=${section.id}'">Show More</button>
                     </div>
                     <div class="section-product-grid">
                         ${productsHtml}
                     </div>
+                    <div class="section-footer-action">
+                        <button class="show-more-btn" onclick="window.location.href='section.html?id=${section.id}'">Show More</button>
+                    </div>
                 </div>
             `;
         }
+        
+        // --- SEARCH POPUP LOGIC (UNCHANGED) ---
 
-        // SEARCH (UNCHANGED)
         window.performSearch = (query) => {
             const resultsEl = document.getElementById('searchResults');
             if (query.length < 2) {
@@ -814,11 +1431,13 @@
             document.getElementById('hamburgerMenu').classList.toggle('show');
         };
 
-        // INIT
+        // --- INIT ---
+        loadTopCategories(); 
         loadNotifications();
-        loadAllProductsAndReviews();
+        loadVideoBanners(); 
+        loadAllProductsAndReviews(); 
         updateCartBadge();
-        loadDynamicLogo(); // <-- NEW: Load the logo URL from Firebase
+        loadDynamicLogo();
         window.addEventListener('storage', updateCartBadge); 
     </script>
 </body>

@@ -9,23 +9,21 @@
     <style>
         /* ========================================
         GLOBAL STYLES AND RESETS
-        ========================================
-        */
+        ======================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: 'Inter', 'Segoe UI', sans-serif; 
-            background: #f4f7f6; /* Light background for contrast */
+            background: #f4f7f6;
             padding-bottom: 90px; 
             color: #333;
         }
 
         /* ========================================
         HEADER
-        ========================================
-        */
+        ======================================== */
         .header { 
             position: fixed; top: 0; left: 0; width: 100%; 
-            background: #ffffff; /* Clean white header */
+            background: #ffffff;
             padding: 15px 20px; 
             display: flex; align-items: center; 
             justify-content: space-between; 
@@ -35,88 +33,107 @@
         .header h2 { font-size: 18px; font-weight: 600; color: #1f2937; }
         .back-btn, .share-btn { 
             background: none; border: none; font-size: 22px; 
-            cursor: pointer; color: #4CAF50; /* Green icons */
+            cursor: pointer; color: #4CAF50;
             transition: transform 0.2s;
         }
         .back-btn:hover, .share-btn:hover { transform: scale(1.1); }
 
         /* ========================================
         IMAGE SLIDER & POSITIONING
-        ========================================
-        */
+        ======================================== */
         .main-container { 
-            padding: 65px 15px 0; /* Reduced top padding to pull image up */
+            padding: 65px 15px 0;
         }
         .swiper { 
             width: 100%; 
-            height: 400px; /* Increased height for better visibility */
-            margin-bottom: 20px; 
+            height: 400px;
+            margin-bottom: 5px;
         }
         .swiper-slide { 
-            background-size: cover; /* Changed back to cover for better fill */
+            background-size: cover;
             background-repeat: no-repeat;
             background-position: center; 
             border-radius: 0 0 24px 24px; 
-            cursor: zoom-in; /* Indicate zoom functionality */
+            cursor: zoom-in;
         }
         .swiper-pagination-bullet { background: #ddd; opacity: 0.5; }
         .swiper-pagination-bullet-active { background: #4CAF50; opacity: 1; }
         
         /* ========================================
-        ZOOM MODAL (UPDATED - Buttons Removed)
-        ========================================
-        */
+        VARIANT SQUARES SECTION
+        ======================================== */
+        .variant-squares-section {
+            display: flex;
+            align-items: center;
+            padding: 0 15px 15px;
+            gap: 12px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 15px;
+        }
+        .variant-square {
+            display: inline-block;
+            width: 50px;
+            min-width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+        }
+        .variant-square.active {
+            border-color: #4CAF50;
+            transform: scale(1.05);
+        }
+
+        /* ========================================
+        ZOOM MODAL
+        ======================================== */
         #zoomModal {
             display: none;
             position: fixed;
             z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
             overflow: hidden;
             background-color: rgba(0,0,0,0.95);
             transition: background-color 0.3s;
         }
         #zoomedImageContainer {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); /* Default to no extra scale */
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             max-width: 100%;
             max-height: 100%;
-            transition: transform 0.3s ease-out; /* Smooth zoom animation */
+            transition: transform 0.3s ease-out;
         }
         #zoomedImage {
             display: block;
             width: auto;
             height: auto;
-            max-width: 100vw; /* Image takes full viewport width if it can */
+            max-width: 100vw;
             max-height: 100vh;
             cursor: grab;
             user-select: none;
         }
         .close-zoom {
             position: absolute;
-            top: 15px;
-            right: 35px;
+            top: 15px; right: 35px;
             color: #f1f1f1;
             font-size: 40px;
             font-weight: bold;
             transition: 0.3s;
             cursor: pointer;
         }
-        .close-zoom:hover,
-        .close-zoom:focus {
-            color: #bbb;
-            text-decoration: none;
-        }
-        /* Zoom controls removed */
+        .close-zoom:hover { color: #bbb; }
 
         /* ========================================
-        MAIN CONTAINER & CARDS
-        ========================================
-        */
+        MAIN CARDS
+        ======================================== */
         .card-section {
             background: white; 
             border-radius: 16px; 
@@ -126,8 +143,8 @@
             transition: transform 0.3s;
         }
         .card-section:hover { 
-             transform: translateY(-2px);
-             box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
         }
         .card-section h3 {
             font-size: 18px; 
@@ -139,9 +156,8 @@
         }
 
         /* ========================================
-        PRICE SECTION (💰)
-        ========================================
-        */
+        PRICE SECTION
+        ======================================== */
         .product-title { 
             font-size: 24px; 
             font-weight: 700; 
@@ -149,24 +165,53 @@
             margin-bottom: 15px; 
             line-height: 1.3;
         }
-        .price-details { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 10px; }
+        .price-details { 
+            display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 10px; 
+        }
         .selling-price { 
             font-size: 32px; 
             font-weight: bold; 
-            color: #4CAF50; /* Primary Green */
+            color: #4CAF50;
             animation: pulse 1.5s infinite;
         }
         .mrp { text-decoration: line-through; font-size: 18px; color: #9ca3af; }
         .discount { 
-            background: #FF9800; /* Orange-Yellow for highlights */
+            background: #FF9800; color: white; 
+            padding: 6px 14px; border-radius: 25px; 
+            font-weight: 700; font-size: 15px; 
+            box-shadow: 0 2px 5px rgba(255,152,0,0.4);
+        }
+
+        /* --- NEW: Limited Stock Tag CSS --- */
+        .limited-stock-tag {
+            background: #dc3545; /* Red Background */
             color: white; 
             padding: 6px 14px; 
             border-radius: 25px; 
             font-weight: 700; 
-            font-size: 15px; 
-            box-shadow: 0 2px 5px rgba(255,152,0,0.4);
+            font-size: 13px; /* Slightly smaller font */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(220, 53, 69, 0.4);
+            animation: bounce 1.2s infinite; /* Animation */
+            margin-left: 10px; /* Spacing */
+            border: 2px solid #ffdddd;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
-        .free-delivery { font-size: 15px; color: #4CAF50; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-5px);}
+            60% {transform: translateY(-2px);}
+        }
+        /* ------------------------------------- */
+
+        .free-delivery { 
+            font-size: 15px; color: #4CAF50; font-weight: 600; 
+            display: flex; align-items: center; gap: 5px; 
+        }
         .free-delivery i { color: #4CAF50; font-size: 16px; }
 
         @keyframes pulse {
@@ -177,8 +222,7 @@
 
         /* ========================================
         OFFERS & STORE
-        ========================================
-        */
+        ======================================== */
         .offers-section ul { list-style: none; padding-left: 0; }
         .offers-section li { 
             margin-bottom: 8px; 
@@ -188,27 +232,29 @@
         }
         .offers-section li i { 
             margin-right: 8px; 
-            color: #FF9800; /* Use highlight color for icons */
+            color: #FF9800; 
             font-size: 16px;
             margin-top: 2px;
         }
-
-        .store-section { display: flex; align-items: center; justify-content: space-between; }
+        .store-section { 
+            display: flex; align-items: center; justify-content: space-between; 
+        }
         .store-name { font-size: 16px; font-weight: 600; color: #1f2937; }
         .store-rating { 
-            font-size: 14px; 
-            color: #6b7280; 
+            font-size: 14px; color: #6b7280; 
             display: flex; align-items: center; gap: 5px; 
             background: #f3f4f6; padding: 5px 10px; border-radius: 12px;
         }
         .store-rating i { color: #FF9800; }
 
         /* ========================================
-        SELECTION OPTIONS (🎨)
-        ========================================
-        */
+        SELECTION OPTIONS
+        ======================================== */
         .option-group { margin-bottom: 20px; }
-        .option-group label { display: block; font-weight: 600; margin-bottom: 10px; color: #1f2937; font-size: 15px; }
+        .option-group label { 
+            display: block; font-weight: 600; margin-bottom: 10px; 
+            color: #1f2937; font-size: 15px; 
+        }
         .option-grid { display: flex; gap: 10px; flex-wrap: wrap; }
         .option-item { 
             padding: 10px 18px; 
@@ -225,45 +271,44 @@
             border-color: #a7f3d0;
         }
         .option-item.active { 
-            border-color: #4CAF50; /* Active Green */
+            border-color: #4CAF50;
             background: #e6ffe6; 
             color: #1f2937; 
             font-weight: 600;
-            transform: scale(1.05); /* Pop effect on selection */
+            transform: scale(1.05);
         }
 
         /* ========================================
-        DESCRIPTION (📄)
-        ========================================
-        */
-        .description { color: #4b5563; line-height: 1.6; margin-bottom: 20px; font-size: 15px; }
+        DESCRIPTION
+        ======================================== */
+        .description { 
+            color: #4b5563; line-height: 1.6; margin-bottom: 20px; font-size: 15px; 
+        }
         .details-table { display: flex; flex-direction: column; gap: 8px; }
         .detail-row { 
-            display: flex; 
-            justify-content: space-between; 
-            color: #6b7280; 
-            font-size: 14px; 
+            display: flex; justify-content: space-between; 
+            color: #6b7280; font-size: 14px; 
             padding-bottom: 5px;
             border-bottom: 1px dashed #f3f4f6;
         }
         .detail-row span:first-child { font-weight: 500; color: #333; }
 
-
         /* ========================================
-        RATINGS & REVIEWS (⭐)
-        ========================================
-        */
-        .rating-summary { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        RATINGS & REVIEWS
+        ======================================== */
+        .rating-summary { 
+            display: flex; align-items: center; gap: 20px; 
+            margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; 
+        }
         .avg-rating { 
-            font-size: 48px; 
-            font-weight: bold; 
-            color: #FF9800; 
-            line-height: 1; 
+            font-size: 48px; font-weight: bold; 
+            color: #FF9800; line-height: 1; 
             text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
         }
         .summary-text { font-size: 14px; color: #6c757d; font-weight: 500;}
-        .summary-text .stars { font-size: 20px; display: block; margin-top: 5px; color: #FF9800;}
-
+        .summary-text .stars { 
+            font-size: 20px; display: block; margin-top: 5px; color: #FF9800;
+        }
         .review-list { display: flex; flex-direction: column; gap: 18px; }
         .review-item { 
             border-left: 4px solid #4CAF50; 
@@ -272,7 +317,9 @@
             background: #f9f9f9; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .review-header { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; 
+        }
         .review-stars { color: #FF9800; font-size: 18px; }
         .review-date { font-size: 12px; color: #9ca3af; }
         .review-text { font-size: 15px; color: #333; line-height: 1.5; margin-top: 8px; }
@@ -280,12 +327,11 @@
         .no-reviews { color: #dc3545; text-align: center; padding: 20px; font-size: 16px; }
 
         /* ========================================
-        BOTTOM FIXED BAR & BUTTON
-        ========================================
-        */
+        BOTTOM BAR
+        ======================================== */
         .bottom-bar { 
             position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: white; /* Clean bottom bar */
+            background: white; 
             display: flex; justify-content: center; 
             padding: 10px 15px; 
             box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
@@ -301,7 +347,7 @@
             max-width: 400px; 
             cursor: pointer; 
             transition: all 0.3s ease; 
-            background: #4CAF50; /* Green primary button */
+            background: #4CAF50; 
             color: white;
             box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
         }
@@ -314,9 +360,8 @@
         .add-cart-btn:active { transform: scale(0.95); }
 
         /* ========================================
-        ADD TO CART POPUP
-        ========================================
-        */
+        POPUP
+        ======================================== */
         .popup-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.6); z-index: 2000; 
@@ -335,10 +380,7 @@
             animation: popUp 0.3s forwards;
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes popUp { 
-            100% { transform: translate(-50%, -50%) scale(1); } 
-        }
-
+        @keyframes popUp { 100% { transform: translate(-50%, -50%) scale(1); } }
         .popup h3 { margin-bottom: 20px; color: #1f2937; font-size: 20px; }
         .popup .option-group { margin-bottom: 20px; }
         .popup select { 
@@ -348,27 +390,20 @@
         }
         .popup select:focus { border-color: #4CAF50; outline: none; }
         .popup .confirm-btn { 
-            background: #FF9800; /* Orange confirm button */
-            color: white; 
-            border: none; 
-            padding: 12px 30px; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            cursor: pointer; 
-            margin-top: 15px;
-            font-weight: 600;
-            transition: background 0.3s;
+            background: #FF9800; color: white; 
+            border: none; padding: 12px 30px; 
+            border-radius: 8px; font-size: 16px; 
+            cursor: pointer; margin-top: 15px;
+            font-weight: 600; transition: background 0.3s;
         }
         .popup .confirm-btn:hover { background: #E65100; }
 
         /* ========================================
-        TOAST NOTIFICATION
-        ========================================
-        */
+        TOAST
+        ======================================== */
         .toast-notification {
             position: fixed;
-            top: 80px;
-            right: 20px;
+            top: 80px; right: 20px;
             background: #4CAF50;
             color: white;
             padding: 15px;
@@ -380,22 +415,18 @@
             min-width: 150px;
             text-align: center;
         }
-
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-
         @keyframes slideOut {
             from { transform: translateX(0); opacity: 1; }
             to { transform: translateX(100%); opacity: 0; }
         }
 
-
         /* ========================================
-        MEDIA QUERIES (Responsiveness)
-        ========================================
-        */
+        MEDIA QUERIES
+        ======================================== */
         @media (max-width: 768px) {
             .swiper { height: 320px; } 
             .price-section .product-title { font-size: 20px; }
@@ -407,6 +438,7 @@
             .card-section { padding: 15px; }
             .header { padding: 12px 15px; }
             .header h2 { font-size: 16px; }
+            .limited-stock-tag { margin-top: 10px; margin-left: 0; }
         }
     </style>
 </head>
@@ -417,18 +449,20 @@
         <button class="share-btn" onclick="shareProduct()"><i class="fas fa-share-alt"></i></button>
     </div>
 
-    <div id="zoomModal" onclick="closeZoomModal()">
-        <span class="close-zoom" onclick="closeZoomModal(event)">&times;</span>
+    <div id="zoomModal" onclick="closeZoomModal(event)">
+        <span class="close-zoom" onclick="closeZoomModal(event)">×</span>
         <div id="zoomedImageContainer">
             <img id="zoomedImage" src="" alt="Zoomed Product Image">
         </div>
-        </div>
+    </div>
 
     <div class="main-container">
         <div class="swiper mySwiper">
             <div class="swiper-wrapper" id="imageSlider"></div>
             <div class="swiper-pagination"></div>
         </div>
+        
+        <div id="variantSquaresSection" class="variant-squares-section"></div>
 
         <div class="card-section price-section">
             <h1 class="product-title" id="productTitle">Loading Product...</h1>
@@ -436,11 +470,8 @@
         </div>
 
         <div class="card-section offers-section" id="offersSection"></div>
-
         <div class="card-section store-section" id="storeSection"></div>
-
         <div class="card-section options-section" id="optionsSection"></div>
-
         <div class="card-section desc-section" id="descSection"></div>
 
         <div class="card-section reviews-section">
@@ -467,7 +498,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Firebase Config (Keep it the same)
         const firebaseConfig = {
             apiKey: "AIzaSyAmAI2z12tk2bnlm__JT24ZGr5giB7Wpk0",
             authDomain: "yesbag-84897.firebaseapp.com",
@@ -485,18 +515,45 @@
         let productId = '';
         let selectedOptions = {}; 
         let allReviews = []; 
-        let swiperInstance = null; // Variable to hold the Swiper instance
-        
-        // Removed currentZoom and related pan variables as explicit zoom buttons are gone
+        let swiperInstance = null;
+
+        const DEFAULT_IMAGES = [
+            'https://via.placeholder.com/600x400?text=Test_Image_1',
+            'https://via.placeholder.com/600x400?text=Test_Image_2',
+            'https://via.placeholder.com/600x400?text=Test_Image_3'
+        ];
+        const VARIANT_ATTRIBUTE_KEY = 'color';
+        const LIMITED_STOCK_THRESHOLD = 10; // SKU ki limit 10 ya usse kam
 
         function getProductData(product) {
-            const discount = product.mrp && product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
+            const discount = product.mrp && product.price 
+                ? Math.round(((product.mrp - product.price) / product.mrp) * 100) 
+                : 0;
+            
+            let images = product.images || DEFAULT_IMAGES;
+            let stock = product.stock !== undefined ? product.stock : 99; // Default stock high
+            
+            const selectedVariantValue = selectedOptions[VARIANT_ATTRIBUTE_KEY];
+            
+            if (product.variants && selectedVariantValue) {
+                const variant = product.variants[selectedVariantValue];
+                if (variant) {
+                    if (variant.images && variant.images.length > 0) {
+                        images = variant.images;
+                    }
+                    if (variant.stock !== undefined) {
+                        stock = variant.stock;
+                    }
+                }
+            }
+            
             return {
-                images: product.images || [product.image || 'https://via.placeholder.com/600x400?text=Product_Image'], // Placeholder size increased
+                images,
                 title: product.title || 'Amazing Product',
                 price: product.price || 999,
                 mrp: product.mrp || 1299,
-                discount: discount,
+                discount,
+                stock, // Include stock in data
                 store: product.store || 'YesBag Store',
                 description: product.description || 'No description available.',
                 attributes: product.attributes || {}
@@ -508,8 +565,19 @@
                 const reviewsRef = ref(db, 'reviews');
                 const snapshot = await get(reviewsRef);
                 const reviewsObj = snapshot.val() || {};
-                const productReviews = Object.values(reviewsObj).filter(review => review.productId === productId);
                 
+                const productReviews = Object.values(reviewsObj)
+                    .filter(review => review.productId === productId);
+                
+                if (productId === 'test123' && productReviews.length === 0) {
+                    // Added a review with only rating for testing the new logic
+                    productReviews.push(
+                        { productId: 'test123', rating: 5, review: "Fantastic product, very durable!", timestamp: Date.now() - 86400000 },
+                        { productId: 'test123', rating: 4, review: null, timestamp: Date.now() - 172800000 }, // Only rating, no review text
+                        { productId: 'test123', rating: 4, review: "It was okay, met my expectations.", timestamp: Date.now() - 259200000 }
+                    );
+                }
+
                 allReviews = productReviews;
                 displayReviews(); 
             } catch (error) {
@@ -529,30 +597,42 @@
                 return;
             }
 
-            const totalRating = allReviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+            // 1. Calculate Summary (uses ALL ratings)
+            const totalRating = allReviews.reduce((sum, r) => sum + (r.rating || 0), 0);
             const avgRating = (totalRating / allReviews.length).toFixed(1);
-            const totalCount = allReviews.length;
+            const totalCount = allReviews.length; // Total number of ratings
             const starsHtml = '★'.repeat(Math.round(avgRating)) + '☆'.repeat(5 - Math.round(avgRating));
 
             summaryElement.innerHTML = `
-                <div class="avg-rating">${avgRating}</div>
-                <div class="summary-text">
-                    Average Rating<span class="stars">${starsHtml}</span>
-                    <small>(${totalCount} Reviews)</small>
+                <div class="rating-summary">
+                    <div class="avg-rating">${avgRating}</div>
+                    <div class="summary-text">
+                        Average Rating<span class="stars">${starsHtml}</span>
+                        <small>(${totalCount} Ratings)</small> 
+                    </div>
                 </div>
             `;
             
-            const reviewsHtml = allReviews.map(review => {
+            // 2. Filter reviews for the list (only those with review text)
+            const reviewsWithText = allReviews.filter(review => review.review && review.review.trim().length > 0);
+
+            if (reviewsWithText.length === 0) {
+                 listElement.innerHTML = `<div class="no-reviews">No written reviews available.</div>`;
+                 return;
+            }
+
+            // 3. Display the filtered reviews
+            const reviewsHtml = reviewsWithText.map(review => {
                 const reviewStars = '★'.repeat(review.rating || 0) + '☆'.repeat(5 - (review.rating || 0));
                 const date = review.timestamp ? new Date(review.timestamp).toLocaleDateString('en-IN') : 'N/A';
-                
+                const reviewText = review.review ? `<div class="review-text">${review.review}</div>` : '';
                 return `
                     <div class="review-item">
                         <div class="review-header">
                             <span class="review-stars">${reviewStars}</span>
                             <span class="review-date">${date}</span>
                         </div>
-                        <div class="review-text">${review.review || 'No comment provided.'}</div>
+                        ${reviewText}
                         <div class="review-customer">Anonymous Buyer</div>
                     </div>
                 `;
@@ -572,55 +652,98 @@
                 currentProduct = snapshot.val();
             } else {
                 currentProduct = {
-                    title: 'YesBag Test Product (No Firebase)',
+                    title: 'YesBag Test Product (Variant Demo)',
                     price: 999,
                     mrp: 1299,
-                    images: ['https://via.placeholder.com/600x400?text=Test_Image_1', 'https://via.placeholder.com/600x400?text=Test_Image_2', 'https://via.placeholder.com/600x400?text=Test_Image_3'],
+                    stock: 8, // Set a low stock for initial display
+                    images: DEFAULT_IMAGES,
                     store: 'Test Store',
-                    description: 'This is a description for the test product, demonstrating how the review section works.',
-                    attributes: { size: ['S', 'M', 'L'], color: ['Red', 'Black', 'Blue'] } 
+                    description: 'This is a description for the test product, demonstrating variant-specific images and option syncing.',
+                    attributes: { 
+                        size: ['S', 'M', 'L'], 
+                        color: ['Red', 'Black', 'Blue'] 
+                    }, 
+                    variants: {
+                        'Red': { images: ['https://via.placeholder.com/600x400/FF5733/FFFFFF?text=Red_Variant_1', 'https://via.placeholder.com/600x400/FF5733/FFFFFF?text=Red_Variant_2'], stock: 15 },
+                        'Black': { images: ['https://via.placeholder.com/600x400/000000/FFFFFF?text=Black_Variant_1', 'https://via.placeholder.com/600x400/000000/FFFFFF?text=Black_Variant_2', 'https://via.placeholder.com/600x400/000000/FFFFFF?text=Black_Variant_3'], stock: 5 }, // Low stock variant
+                        'Blue': { images: ['https://via.placeholder.com/600x400/337AFF/FFFFFF?text=Blue_Variant'], stock: 11 }
+                    }
                 };
             }
             
             selectedOptions = {};
+            const initialColor = currentProduct.attributes?.[VARIANT_ATTRIBUTE_KEY]?.[0];
+            if (initialColor) selectedOptions[VARIANT_ATTRIBUTE_KEY] = initialColor;
+            
             displayProduct();
             fetchReviews(productId);
         }
 
+        function getVariantPreviewImage(variantKey) {
+            const variant = currentProduct.variants?.[variantKey];
+            if (variant && variant.images && variant.images.length > 0) {
+                return variant.images[0];
+            }
+            const colorMap = { 'Red': 'FF5733', 'Black': '000000', 'Blue': '337AFF' };
+            const hex = colorMap[variantKey] || '999999';
+            return `https://via.placeholder.com/60x60/${hex}/FFFFFF?text=${variantKey[0]}`; 
+        }
+
         function displayProduct() {
             const data = getProductData(currentProduct);
-
             document.getElementById('productTitle').textContent = data.title;
 
-            // 🖼️ IMAGE SLIDER (Updated to include onclick for zoom)
+            // IMAGE SLIDER
             const imageSlider = document.getElementById('imageSlider');
             imageSlider.innerHTML = data.images.map(img => 
                 `<div class="swiper-slide" 
-                      style="background-image:url(${img})" 
+                      style="background-image:url('${img}')" 
                       onclick="openZoomModal('${img}')">
                 </div>`
             ).join('');
             
-            // Initialize Swiper only once
-            if (swiperInstance) {
-                swiperInstance.destroy(true, true);
-            }
+            if (swiperInstance) swiperInstance.destroy(true, true);
             swiperInstance = new Swiper('.mySwiper', {
                 pagination: { el: '.swiper-pagination', clickable: true },
                 loop: true
             });
 
-            // 💰 PRICE SECTION (Remains the same)
+            // VARIANT SQUARES
+            const variantSquaresSection = document.getElementById('variantSquaresSection');
+            let squaresHtml = '';
+            const colors = currentProduct.attributes?.[VARIANT_ATTRIBUTE_KEY];
+            if (colors && currentProduct.variants) {
+                squaresHtml = colors.map(value => {
+                    const preview = getVariantPreviewImage(value);
+                    const active = selectedOptions[VARIANT_ATTRIBUTE_KEY] === value ? ' active' : '';
+                    return `
+                        <div class="variant-square${active}" 
+                             style="background-image:url('${preview}')"
+                             data-value="${value}"
+                             onclick="selectOption('${VARIANT_ATTRIBUTE_KEY}', '${value}', this, true)">
+                        </div>
+                    `;
+                }).join('');
+            }
+            variantSquaresSection.innerHTML = squaresHtml;
+            variantSquaresSection.style.display = squaresHtml ? 'flex' : 'none';
+
+            // PRICE
+            // Limited Stock Tag Logic
+            const limitedStockTag = data.stock <= LIMITED_STOCK_THRESHOLD
+                ? `<div class="limited-stock-tag"><i class="fas fa-exclamation-triangle"></i> Hurry, Only few pieces left!</div>`
+                : '';
+            
             document.getElementById('priceSection').innerHTML = `
                 <div class="price-details">
                     <div class="selling-price">₹${data.price}</div>
                     <div class="mrp">₹${data.mrp}</div>
                     ${data.discount > 0 ? `<div class="discount">${data.discount}% off</div>` : ''}
-                </div>
+                    ${limitedStockTag} </div>
                 <div class="free-delivery"><i class="fas fa-shipping-fast"></i> Free Delivery</div>
             `;
 
-            // 🎁 OFFERS SECTION (Remains the same)
+            // OFFERS
             const offersSection = document.getElementById('offersSection');
             offersSection.innerHTML = `
                 <h3>Available Offers</h3>
@@ -631,42 +754,44 @@
                 </ul>
             `;
 
-            // 🏪 STORE SECTION (Remains the same)
+            // STORE
             document.getElementById('storeSection').innerHTML = `
                 <div class="store-name"><i class="fas fa-store"></i> Sold by: ${data.store}</div>
                 <div class="store-rating"><i class="fas fa-star"></i> <span id="storeRatingValue">4.5</span></div>
             `;
 
-            // 🎨 SELECTION OPTIONS (Remains the same)
+            // OPTIONS
             const optionsSection = document.getElementById('optionsSection');
             let optionsHtml = '';
-            
             const attributes = currentProduct.attributes || {};
-            
-            for (const [attrKey, attrValues] of Object.entries(attributes)) {
-                if (Array.isArray(attrValues) && attrValues.length > 0) {
-                    const label = attrKey.charAt(0).toUpperCase() + attrKey.slice(1);
+            for (const [key, values] of Object.entries(attributes)) {
+                if (Array.isArray(values) && values.length > 0) {
+                    const label = key.charAt(0).toUpperCase() + key.slice(1);
+                    const selected = selectedOptions[key] || '';
                     optionsHtml += `
-                        <div class="option-group" data-attr-type="${attrKey}">
+                        <div class="option-group" data-attr-type="${key}">
                             <label>Select ${label}:</label>
                             <div class="option-grid">
-                                ${attrValues.map(value => 
-                                    `<div class="option-item" data-value="${value}" onclick="selectOption('${attrKey}', '${value}', this)">${value}</div>`
-                                ).join('')}
+                                ${values.map(v => {
+                                    const active = selected === v ? ' active' : '';
+                                    const rerender = key === VARIANT_ATTRIBUTE_KEY ? 'true' : 'false';
+                                    return `<div class="option-item${active}" 
+                                                  data-value="${v}" 
+                                                  onclick="selectOption('${key}', '${v}', this, ${rerender})">${v}</div>`;
+                                }).join('')}
                             </div>
                         </div>
                     `;
                 }
             }
-            
             optionsSection.innerHTML = optionsHtml;
             optionsSection.style.display = optionsHtml ? 'block' : 'none';
 
-            // 📄 DESCRIPTION (Remains the same)
+            // DESCRIPTION
             let detailsHtml = '';
-            for (const [key, value] of Object.entries(currentProduct.attributes || {})) {
-                const displayValue = Array.isArray(value) ? value.join(', ') : value;
-                detailsHtml += `<div class="detail-row"><span>${key.charAt(0).toUpperCase() + key.slice(1)}:</span><span>${displayValue}</span></div>`;
+            for (const [k, v] of Object.entries(currentProduct.attributes || {})) {
+                const val = Array.isArray(v) ? v.join(', ') : v;
+                detailsHtml += `<div class="detail-row"><span>${k.charAt(0).toUpperCase() + k.slice(1)}:</span><span>${val}</span></div>`;
             }
             document.getElementById('descSection').innerHTML = `
                 <h3>Product Description</h3>
@@ -674,187 +799,140 @@
                 ${detailsHtml ? `<div class="details-table">${detailsHtml}</div>` : ''}
             `;
         }
-        
-        // 🎨 SELECTION LOGIC (Remains the same)
-        window.selectOption = (type, value, element) => {
-            const container = element.closest('.option-group');
-            container.querySelectorAll('.option-item').forEach(opt => opt.classList.remove('active'));
-            element.classList.add('active');
+
+        window.selectOption = (type, value, element, shouldRerender = false) => {
+            const container = document.querySelector(`.option-group[data-attr-type="${type}"]`);
+            if (container) {
+                container.querySelectorAll('.option-item').forEach(opt => opt.classList.remove('active'));
+                const target = container.querySelector(`.option-item[data-value="${value}"]`);
+                if (target) target.classList.add('active');
+            }
             selectedOptions[type] = value;
-            console.log('Selected Options:', selectedOptions);
-        }
 
-        // 🛒 CRITICAL FIX: ADD TO CART LOGIC
+            if (type === VARIANT_ATTRIBUTE_KEY) {
+                document.querySelectorAll('.variant-square').forEach(sq => sq.classList.remove('active'));
+                const sq = document.querySelector(`.variant-square[data-value="${value}"]`);
+                if (sq) sq.classList.add('active');
+                shouldRerender = true;
+            }
+            if (shouldRerender) displayProduct();
+        };
+
         function handleAddToCart() {
-            const requiredAttributeKeys = Object.keys(currentProduct.attributes || {});
-            
-            if (requiredAttributeKeys.length === 0) {
-                addToCartDirectly(true); // Pass true to indicate redirect
-                return;
-            }
+            const required = Object.keys(currentProduct.attributes || {});
+            if (required.length === 0) return addToCartDirectly(true);
 
-            const allOptionsSelectedInBody = requiredAttributeKeys.every(attrKey => 
-                selectedOptions.hasOwnProperty(attrKey) && selectedOptions[attrKey] !== ''
-            );
-
-            if (allOptionsSelectedInBody) {
-                addToCartDirectly(true); // Pass true to indicate redirect
-            } else {
-                showAddToCartPopup();
-            }
+            const allSelected = required.every(k => selectedOptions[k]);
+            if (allSelected) return addToCartDirectly(true);
+            showAddToCartPopup();
         }
 
         function showAddToCartPopup() {
             const popup = document.getElementById('addToCartPopup');
-            const popupOptions = document.getElementById('popupOptions');
-            let optionsHtml = '';
-            
-            const attributes = currentProduct.attributes || {};
-            
-            for (const [attrKey, attrValues] of Object.entries(attributes)) {
-                if (Array.isArray(attrValues) && attrValues.length > 0) {
-                    const selectedValue = selectedOptions[attrKey] || "";
-                    const label = attrKey.charAt(0).toUpperCase() + attrKey.slice(1);
-                    
-                    optionsHtml += `
+            const opts = document.getElementById('popupOptions');
+            let html = '';
+            const attrs = currentProduct.attributes || {};
+            for (const key of Object.keys(attrs)) {
+                const vals = attrs[key];
+                if (Array.isArray(vals) && vals.length > 0) {
+                    const sel = selectedOptions[key] || '';
+                    const label = key.charAt(0).toUpperCase() + key.slice(1);
+                    html += `
                         <div class="option-group">
                             <label>Select ${label}:</label>
-                            <select id="${attrKey}Select" onchange="updateSelectedOptions('${attrKey}', this.value)">
+                            <select id="${key}Select" onchange="updateSelectedOptions('${key}', this.value)">
                                 <option value="">Select ${label}</option>
-                                ${attrValues.map(value => 
-                                    `<option value="${value}" ${value === selectedValue ? 'selected' : ''}>${value}</option>`
-                                ).join('')}
+                                ${vals.map(v => `<option value="${v}" ${v===sel?'selected':''}>${v}</option>`).join('')}
                             </select>
                         </div>
                     `;
                 }
             }
-
-            popupOptions.innerHTML = optionsHtml;
+            opts.innerHTML = html;
             popup.style.display = 'block';
         }
 
         window.updateSelectedOptions = (type, value) => {
-            if (value && value !== "") {
-                selectedOptions[type] = value;
-                const mainBodyItems = document.querySelectorAll(`.option-group[data-attr-type="${type}"] .option-item`);
-                mainBodyItems.forEach(item => {
-                    item.classList.remove('active');
-                    if (item.getAttribute('data-value') === value) {
-                        item.classList.add('active');
-                    }
-                });
-            } else {
-                delete selectedOptions[type]; 
-            }
-        }
+            const rerender = (type === VARIANT_ATTRIBUTE_KEY);
+            if (value) selectedOptions[type] = value;
+            else delete selectedOptions[type];
+            window.selectOption(type, value, null, rerender);
+        };
 
         window.confirmAddToCart = () => {
-            const requiredAttributeKeys = Object.keys(currentProduct.attributes || {});
-            const allOptionsSelectedInPopup = requiredAttributeKeys.every(attrKey => 
-                selectedOptions.hasOwnProperty(attrKey) && selectedOptions[attrKey] !== ''
-            );
+            const required = Object.keys(currentProduct.attributes || {});
+            const ok = required.every(k => selectedOptions[k]);
+            if (!ok) { alert('Please select all options.'); return; }
+            document.getElementById('addToCartPopup').style.display = 'none';
+            addToCartDirectly(true);
+        };
 
-            if (!allOptionsSelectedInPopup) {
-                alert('Please select all available options.');
-                return;
-            }
-
-            const popup = document.getElementById('addToCartPopup');
-            addToCartDirectly(true); // Pass true to indicate redirect
-            popup.style.display = 'none';
-        }
-
-        function addToCartDirectly(shouldRedirect) {
+        function addToCartDirectly(redirect) {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            const optionsString = Object.keys(selectedOptions).sort().map(key => `${key}:${selectedOptions[key]}`).join('|');
-            const uniqueId = `${productId}_${optionsString}`;
-            
-            let existingItem = cart.find(item => item.uniqueId === uniqueId);
-
-            if (existingItem) {
-                existingItem.qty += 1;
+            const optStr = Object.keys(selectedOptions).sort().map(k => `${k}:${selectedOptions[k]}`).join('|');
+            const uid = `${productId}_${optStr}`;
+            let item = cart.find(i => i.uniqueId === uid);
+            if (item) {
+                item.qty += 1;
             } else {
-                const product = {
+                const data = getProductData(currentProduct);
+                cart.push({
                     id: productId,
-                    uniqueId: uniqueId,
+                    uniqueId: uid,
                     title: currentProduct.title || 'Product',
-                    image: currentProduct.images?.[0] || currentProduct.image || 'https://via.placeholder.com/150?text=Product',
+                    image: data.images?.[0] || 'https://via.placeholder.com/150?text=Product',
                     price: currentProduct.price || 999,
                     qty: 1,
                     options: { ...selectedOptions }
-                };
-                cart.push(product);
+                });
             }
-            
             localStorage.setItem('cart', JSON.stringify(cart));
 
-            // Show Toast
             const toast = document.createElement('div');
             toast.className = 'toast-notification';
             toast.innerHTML = '<i class="fas fa-check-circle"></i> Added to Cart!';
             document.body.appendChild(toast);
-            
-            // REDIRECTION LOGIC
-            if (shouldRedirect) {
-                 setTimeout(() => window.location.href = 'cart.html', 500); 
-            }
+            setTimeout(() => toast.remove(), 2000);
 
-            setTimeout(() => toast.remove(), 2000); 
+            if (redirect) setTimeout(() => window.location.href = 'cart.html', 500);
         }
 
-        // 🖼️ ZOOM MODAL FUNCTIONS (UPDATED - Simplified)
-        window.openZoomModal = (imgSrc) => {
-            const modal = document.getElementById('zoomModal');
-            const zoomedImageContainer = document.getElementById('zoomedImageContainer');
-            const zoomedImage = document.getElementById('zoomedImage');
-            zoomedImage.src = imgSrc;
-            modal.style.display = 'block';
-            
-            // Apply initial zoom transformation
-            zoomedImageContainer.style.transform = `translate(-50%, -50%) scale(1.05)`; 
+        window.openZoomModal = src => {
+            document.getElementById('zoomedImage').src = src;
+            document.getElementById('zoomModal').style.display = 'block';
+            document.getElementById('zoomedImageContainer').style.transform = 'translate(-50%, -50%) scale(1.05)';
         };
 
-        window.closeZoomModal = (event) => {
-            // Only close if clicked on the modal background or the close button itself
-            if (event && event.target !== document.getElementById('zoomModal') && event.target !== document.querySelector('.close-zoom')) {
-                return;
-            }
+        window.closeZoomModal = e => {
+            if (e && e.target !== document.getElementById('zoomModal') && e.target.className !== 'close-zoom') return;
             document.getElementById('zoomModal').style.display = 'none';
-            // Reset zoom when closing
-            document.getElementById('zoomedImageContainer').style.transform = `translate(-50%, -50%) scale(1.0)`;
+            document.getElementById('zoomedImageContainer').style.transform = 'translate(-50%, -50%) scale(1)';
         };
 
-        // 📤 SHARE (Remains the same)
-        function shareProduct() { 
+        function shareProduct() {
             if (navigator.share) {
                 navigator.share({
                     title: currentProduct.title || 'Check out this product!',
                     text: currentProduct.description || 'Amazing product on YesBag!',
                     url: window.location.href,
-                }).catch((error) => console.log('Error sharing', error));
+                }).catch(() => {});
             } else {
-                alert('Link copied to clipboard: ' + window.location.href); 
+                alert('Link copied: ' + window.location.href);
             }
         }
 
-        // Close popup on overlay click (Remains the same)
-        document.getElementById('addToCartPopup').addEventListener('click', (e) => {
-            if (e.target.id === 'addToCartPopup') {
-                e.target.style.display = 'none';
-            }
+        document.getElementById('addToCartPopup').addEventListener('click', e => {
+            if (e.target.id === 'addToCartPopup') e.target.style.display = 'none';
         });
 
-        // GLOBAL FUNCTIONS
         window.selectOption = window.selectOption;
         window.handleAddToCart = handleAddToCart;
         window.updateSelectedOptions = window.updateSelectedOptions;
         window.confirmAddToCart = window.confirmAddToCart;
         window.shareProduct = shareProduct;
-        window.openZoomModal = window.openZoomModal;
-        window.closeZoomModal = window.closeZoomModal;
+        window.openZoomModal = openZoomModal;
+        window.closeZoomModal = closeZoomModal;
 
-        // START
         loadProduct();
     </script>
 </body>
